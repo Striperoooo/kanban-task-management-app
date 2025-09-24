@@ -18,7 +18,7 @@ function App() {
       </div>
       <h1 className="text-4xl font-bold text-blue-600 mb-8">Vite + React + Tailwind</h1>
       <div className="bg-gray-100 p-6 rounded-lg shadow-md">
-        <button 
+        <button
           onClick={() => setCount((count) => count + 1)}
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors"
         >

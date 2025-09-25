@@ -3,8 +3,9 @@ import { describe, it, expect } from 'vitest'
 import App from './App'
 
 describe('App', () => {
-    it('renders Vite + React + Tailwind heading', () => {
+    it('renders kanban app heading', () => {
         render(<App />)
-        expect(screen.getByText('Vite + React + Tailwind')).toBeInTheDocument()
+        expect(screen.getByText('Kanban Task Management App')).toBeInTheDocument()
+        expect(screen.getByText('Clean slate ready for development')).toBeInTheDocument()
     })
 })

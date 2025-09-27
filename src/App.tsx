@@ -1,8 +1,12 @@
+import Header from './components/Header'
+
 function App() {
   return (
     <div className="App">
-      <h1>Kanban Task Management App</h1>
-      <p>Clean slate ready for development</p>
+      <Header />
+      <main className="min-h-screen p-6 bg-light-bg ">
+        <p>Main</p>
+      </main>
     </div>
   )
 }

@@ -9,7 +9,7 @@ export default function Sidebar() {
 
     return (
         <div
-            className="fixed inset-0 z-50 bg-black bg-opacity-40 flex justify-center items-start"
+            className="fixed top-[64px] left-0 right-0 bottom-0 z-50 bg-black bg-opacity-40 flex justify-center items-start"
             onClick={close}
         >
             <div

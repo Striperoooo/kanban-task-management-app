@@ -1,9 +1,19 @@
+import { SidebarProvider } from './contexts/SidebarContext'
+import Header from './components/Header'
+import Sidebar from './components/Sidebar'
+
+
 function App() {
   return (
-    <div className="App">
-      <h1>Kanban Task Management App</h1>
-      <p>Clean slate ready for development</p>
-    </div>
+    <SidebarProvider>
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <Sidebar />
+        <main className="flex-1 bg-light-bg">
+          <p>Main</p>
+        </main>
+      </div>
+    </SidebarProvider>
   )
 }
 

@@ -1,13 +1,17 @@
+import { SidebarProvider } from './contexts/SidebarContext'
 import Header from './components/Header'
+
 
 function App() {
   return (
-    <div className="App">
-      <Header />
-      <main className="min-h-screen p-6 bg-light-bg ">
-        <p>Main</p>
-      </main>
-    </div>
+    <SidebarProvider>
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1 bg-light-bg">
+          <p>Main</p>
+        </main>
+      </div>
+    </SidebarProvider>
   )
 }
 

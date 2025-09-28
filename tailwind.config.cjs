@@ -11,7 +11,8 @@ module.exports = {
             },
             colors: {
                 'light-bg': '#F4F7FD',
-                'main-purple': '#635FC7'
+                'main-purple': '#635FC7',
+                'medium-grey': '#828FA3'
             },
         },
 

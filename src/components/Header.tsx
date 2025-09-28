@@ -19,7 +19,7 @@ export default function Header() {
                     className='flex items-center cursor-pointer'
                     onClick={toggle}
                 >
-                    <span className="font-semibold mr-2">Platform Launch</span>
+                    <span className="font-bold text-lg mr-2">Platform Launch</span>
                     <img src={isOpen ? iconChevUp : iconChevDown} alt="toggle sidebar icon" className='mt-1 w-2 h-1.5' />
                 </div>
 

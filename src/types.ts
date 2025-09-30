@@ -1,33 +1,37 @@
 // Core data types for the Kanban Task Management App
 
 export interface Subtask {
-    title: string;
-    isCompleted: boolean;
+    title: string
+    isCompleted: boolean
 }
 
 export interface Task {
-    title: string;
-    description: string;
-    status: string;
-    subtasks: Subtask[];
+    title: string
+    description: string
+    status: string
+    subtasks: Subtask[]
 }
 
 export interface Column {
-    name: string;
-    tasks: Task[];
+    name: string
+    tasks: Task[]
 }
 
 export interface Board {
-    name: string;
-    columns: Column[];
+    name: string
+    columns?: Column[]
+}
+
+export interface BoardListProps {
+    boards: Board[]
 }
 
 export interface KanbanData {
-    boards: Board[];
+    boards: Board[]
 }
 
 // UI State types
 export interface AppState {
-    boards: Board[];
-    currentBoardIndex: number;
+    boards: Board[]
+    currentBoardIndex: number
 }

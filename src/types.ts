@@ -22,7 +22,7 @@ export interface Board {
     columns?: Column[]
 }
 
-export interface BoardListProps {
+export interface BoardProps {
     boards: Board[]
 }
 

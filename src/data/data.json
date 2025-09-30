@@ -4,7 +4,7 @@
       "name": "John Launch",
       "columns": [
         {
-          "name": "Todo",
+          "name": "Todo for John Launch blebleble",
           "tasks": [
             {
               "title": "Build UI for onboarding flow",
@@ -287,7 +287,7 @@
       "name": "Horse Plan",
       "columns": [
         {
-          "name": "Todo",
+          "name": "Todo for Horse Plan neighh",
           "tasks": [
             {
               "title": "Plan Product Hunt launch",
@@ -378,7 +378,7 @@
       "name": "Cyborg",
       "columns": [
         {
-          "name": "Now",
+          "name": "Now for cyborg beep boop",
           "tasks": [
             {
               "title": "Launch version one",

@@ -12,6 +12,10 @@ export interface Task {
     subtasks: Subtask[]
 }
 
+export interface TaskProps {
+    task: Task
+}
+
 export interface Column {
     name: string
     tasks: Task[]

@@ -16,6 +16,9 @@ module.exports = {
                 'main-purple-second-hover': "#635FC71A",
                 'medium-grey': '#828FA3'
             },
+            boxShadow: {
+                'light-drop-shadow': '0px 4px 6px 0px rgba(54, 78, 126, 0.1015)',
+            }
         },
 
     },

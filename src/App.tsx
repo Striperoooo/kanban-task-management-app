@@ -9,7 +9,7 @@ function App() {
   return (
     <SidebarProvider>
       <BoardProvider>
-        <div className="h-screen flex flex-col">
+        <div className="h-screen pb-6 flex flex-col">
           <Header />
           <Sidebar />
           <main className="flex-1 h-full bg-light-bg">

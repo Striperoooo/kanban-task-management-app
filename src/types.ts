@@ -17,6 +17,10 @@ export interface Column {
     tasks: Task[]
 }
 
+export interface ColumnProps {
+    column: Column
+}
+
 export interface Board {
     name: string
     columns?: Column[]

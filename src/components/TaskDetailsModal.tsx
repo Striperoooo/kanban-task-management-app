@@ -1,6 +1,9 @@
 import type { Task } from "../types";
 
 export default function TaskDetailsModal({ task, onClose }: { task: Task, onClose: () => void }) {
+    const completed = task.subtasks.filter(st => st.isCompleted).length
+    const total = task.subtasks.length
+
     return (
         <div
             className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
@@ -14,7 +17,7 @@ export default function TaskDetailsModal({ task, onClose }: { task: Task, onClos
                 <p className="font-medium text-[13px] text-medium-grey leading-[23px] mb-4">{task.description}</p>
 
                 <span className="inline-block font-bold text-xs text-medium-grey mb-4">
-                    Subtasks (100 of 100)
+                    Subtasks ({completed} of {total})
                 </span>
 
                 <ul>

@@ -6,7 +6,7 @@ export default function TaskCard({ task, onClick }: TaskProps) {
 
     return (
         <div
-            className="taskcard-container bg-white rounded-lg px-4 py-6 mb-5 min-w-[280px] shadow-light-drop-shadow cursor-pointer"
+            className="taskcard-container bg-white rounded-lg px-4 py-6 mb-5 min-w-[280px] shadow-light-drop-shadow cursor-pointer hover:text-main-purple"
             onClick={onClick}
         >
             <h3 className="title font-bold text-[15px] mb-1">

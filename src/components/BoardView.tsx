@@ -1,7 +1,18 @@
 import { useBoard } from '../contexts/BoardContext';
+import Column from './Column';
 
 export default function BoardView() {
-    const { boards, selectedBoard } = useBoard()
+    const { selectedBoard } = useBoard()
 
-    return <main>{selectedBoard.columns[0].name}</main>
+    return (
+        <>
+            <div className='board-container h-full flex overflow-x-auto gap-6  px-4 py-6'>
+                {selectedBoard.columns.map((column) => (
+                    <Column key={column.name} column={column} />
+                ))}
+            </div>
+
+        </>
+
+    )
 }

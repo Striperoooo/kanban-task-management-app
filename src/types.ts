@@ -12,9 +12,18 @@ export interface Task {
     subtasks: Subtask[]
 }
 
+export interface TaskProps {
+    task: Task
+    onClick?: () => void
+}
+
 export interface Column {
     name: string
     tasks: Task[]
+}
+
+export interface ColumnProps {
+    column: Column
 }
 
 export interface Board {

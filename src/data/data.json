@@ -4,7 +4,7 @@
       "name": "John Launch",
       "columns": [
         {
-          "name": "Todo for John Launch blebleble",
+          "name": "Todo",
           "tasks": [
             {
               "title": "Build UI for onboarding flow",

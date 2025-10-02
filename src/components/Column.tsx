@@ -1,7 +1,11 @@
-import type { ColumnProps } from "../types";
+import { useState } from "react";
+import type { ColumnProps, Task } from "../types";
 import TaskCard from './TaskCard';
+import TaskDetailsModal from './TaskDetailsModal'
 
 export default function Column({ column }: ColumnProps) {
+    const [selectedTask, setSelectedTask] = useState<Task | null>(null)
+
     return (
         <div className="column-container h-full flex flex-col">
             <h2 className="column-name mb-6 font-bold text-medium-grey text-xs tracking-[2.4px]">
@@ -15,8 +19,19 @@ export default function Column({ column }: ColumnProps) {
             </h2>
 
             {column.tasks.map(task => (
-                <TaskCard key={task.title} task={task} />
+                <TaskCard
+                    key={task.title}
+                    task={task}
+                    onClick={() => setSelectedTask(task)}
+                />
             ))}
+
+            {selectedTask && (
+                <TaskDetailsModal
+                    task={selectedTask}
+                    onClose={() => setSelectedTask(null)}
+                />
+            )}
 
         </div>
     )

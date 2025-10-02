@@ -14,6 +14,7 @@ export interface Task {
 
 export interface TaskProps {
     task: Task
+    onClick?: () => void
 }
 
 export interface Column {

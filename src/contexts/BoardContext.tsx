@@ -6,6 +6,7 @@ type BoardContextType = {
     selectedBoard: Board
     setSelectedBoard: (board: Board) => void
     boards: Board[]
+    addBoard: (board: Board) => void
 }
 
 const BoardContext = createContext<BoardContextType | undefined>(undefined)
@@ -16,12 +17,26 @@ export function useBoard() {
     return context
 }
 
+
+
 export function BoardProvider({ children }: { children: ReactNode }) {
     const [selectedBoard, setSelectedBoard] = useState<Board>(data.boards[0])
-    const boards = data.boards
+    const [boards, setBoards] = useState<Board[]>(data.boards)
+
+    function addBoard(newBoard: Board) {
+        setBoards(prev => [...prev, newBoard])
+        setSelectedBoard(newBoard)
+    }
 
     return (
-        <BoardContext.Provider value={{ selectedBoard, setSelectedBoard, boards }}>
+        <BoardContext.Provider
+            value={{
+                selectedBoard,
+                setSelectedBoard,
+                boards,
+                addBoard
+            }}
+        >
             {children}
         </BoardContext.Provider>
     )

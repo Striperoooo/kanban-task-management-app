@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { useBoard } from "../contexts/BoardContext";
+import type { Board } from "../types";
 import iconCross from '../assets/icon-cross.svg';
 
-export default function EditBoardModal({ board, onClose }) {
+export default function EditBoardModal(
+    { board, onClose }: { board: Board, onClose: () => void }) {
+
     const { setSelectedBoard, updateBoard } = useBoard();
     const [name, setName] = useState(board.name);
     const [error, setError] = useState("");
@@ -14,17 +17,22 @@ export default function EditBoardModal({ board, onClose }) {
             setError("Board name is required.");
             return;
         }
-        // Optionally check for unique name if you allow renaming
+
+        const validColumns = columns.filter(col => col.trim() !== "");
+        if (validColumns.length === 0) {
+            setError("Board must have at least one column.");
+            return;
+        }
+
+        // Optionally check for unique name if allow renaming
         const updatedBoard = {
             ...board,
             name: name.trim(),
-            columns: columns
-                .filter(col => col.trim() !== "")
-                .map((col, i) => ({
-                    ...board.columns[i],
-                    name: col.trim(),
-                    tasks: board.columns[i]?.tasks || []
-                })),
+            columns: validColumns.map((col, i) => ({
+                ...board.columns[i],
+                name: col.trim(),
+                tasks: board.columns[i]?.tasks || []
+            })),
             originalName: board.name
         };
         updateBoard(updatedBoard);
@@ -44,7 +52,9 @@ export default function EditBoardModal({ board, onClose }) {
                         value={name}
                         onChange={e => setName(e.target.value)}
                     />
-                    {error && <p className="text-red-500 text-xs mb-2">{error}</p>}
+                    {error === "Board name is required." && (
+                        <p className="text-red-500 text-xs mb-2">{error}</p>
+                    )}
 
                     <label className="block font-bold text-xs text-medium-grey mt-6 mb-2">Board Columns</label>
                     {columns.map((col, idx) => (
@@ -68,6 +78,10 @@ export default function EditBoardModal({ board, onClose }) {
                             </button>
                         </div>
                     ))}
+
+                    {error === "Board must have at least one column." && (
+                        <p className="text-red-500 text-xs mb-2">{error}</p>
+                    )}
 
                     <button
                         type="button"

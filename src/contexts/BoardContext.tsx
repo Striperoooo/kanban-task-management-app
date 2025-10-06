@@ -8,6 +8,7 @@ type BoardContextType = {
     boards: Board[]
     addBoard: (board: Board) => void
     updateBoard: (board: Board) => void
+    deleteBoard: (boardName: string) => void
 }
 
 const BoardContext = createContext<BoardContextType | undefined>(undefined)
@@ -29,7 +30,7 @@ export function BoardProvider({ children }: { children: ReactNode }) {
         setSelectedBoard(newBoard)
     }
 
-    function updateBoard(updatedBoard) {
+    function updateBoard(updatedBoard: Board) {
         setBoards(prevBoards =>
             prevBoards.map(b =>
                 b.name === updatedBoard.originalName
@@ -39,6 +40,14 @@ export function BoardProvider({ children }: { children: ReactNode }) {
         )
     }
 
+    function deleteBoard(boardName: string) {
+        setBoards(prev => {
+            const filtered = prev.filter(b => b.name !== boardName)
+            setSelectedBoard(filtered[0] || null)
+            return filtered
+        })
+    }
+
     return (
         <BoardContext.Provider
             value={{
@@ -46,7 +55,8 @@ export function BoardProvider({ children }: { children: ReactNode }) {
                 setSelectedBoard,
                 boards,
                 addBoard,
-                updateBoard
+                updateBoard,
+                deleteBoard
             }}
         >
             {children}

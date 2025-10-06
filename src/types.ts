@@ -39,6 +39,14 @@ export interface KanbanData {
     boards: Board[]
 }
 
+export interface ConfirmModalProps {
+    title: string
+    message: string
+    onConfirm: () => void
+    onCancel: () => void
+    danger?: boolean
+}
+
 // UI State types
 export interface AppState {
     boards: Board[]

@@ -7,6 +7,7 @@ type BoardContextType = {
     setSelectedBoard: (board: Board) => void
     boards: Board[]
     addBoard: (board: Board) => void
+    updateBoard: (board: Board) => void
 }
 
 const BoardContext = createContext<BoardContextType | undefined>(undefined)
@@ -28,17 +29,27 @@ export function BoardProvider({ children }: { children: ReactNode }) {
         setSelectedBoard(newBoard)
     }
 
+    function updateBoard(updatedBoard) {
+        setBoards(prevBoards =>
+            prevBoards.map(b =>
+                b.name === updatedBoard.originalName
+                    ? { ...updatedBoard, name: updatedBoard.name }
+                    : b
+            )
+        )
+    }
+
     return (
         <BoardContext.Provider
             value={{
                 selectedBoard,
                 setSelectedBoard,
                 boards,
-                addBoard
+                addBoard,
+                updateBoard
             }}
         >
             {children}
         </BoardContext.Provider>
     )
 }
-

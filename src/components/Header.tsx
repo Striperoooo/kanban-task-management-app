@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import logoMobile from '../assets/logo-mobile.svg'
 import iconChevDown from '../assets/icon-chevron-down.svg'
 import iconChevUp from '../assets/icon-chevron-up.svg'
@@ -5,11 +6,18 @@ import iconAddTask from '../assets/icon-add-task-mobile.svg'
 import iconEllipsis from '../assets/icon-vertical-ellipsis.svg'
 import { useSidebar } from '../contexts/SidebarContext';
 import { useBoard } from '../contexts/BoardContext';
+import EditBoardModal from './EditBoardModal'
+import ConfirmModal from './ConfirmModal'
 
 export default function Header() {
 
     const { isOpen, toggle, close } = useSidebar()
-    const { selectedBoard } = useBoard()
+    const { selectedBoard, deleteBoard } = useBoard()
+
+    const [menuOpen, setMenuOpen] = useState(false)
+    const [editModalOpen, setEditModalOpen] = useState(false)
+
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false)
 
     return (
         <header className='py-4 px-4 h-16 relative'>
@@ -28,8 +36,48 @@ export default function Header() {
                     <div className='bg-main-purple py-2.5 px-[18px] rounded-3xl cursor-pointer mr-4'>
                         <img src={iconAddTask} alt="add task icon" className='w-3 h-3' />
                     </div>
-                    <div className='inline-flex items-center justify-center p-1 -m-1 cursor-pointer'>
-                        <img src={iconEllipsis} alt="ellipsis icon" className='h-3.5 ' />
+
+                    <div className='relative'>
+                        <div
+                            className='inline-flex items-center justify-center p-1 -m-1 cursor-pointer'
+                            onClick={() => setMenuOpen(prev => !prev)}
+                        >
+                            <img src={iconEllipsis} alt="ellipsis icon" className='h-3' />
+                        </div>
+                        {menuOpen && (
+                            <div className="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded z-50">
+                                <button
+                                    className="font-medium text-medium-grey text-[13px] leading-[23px] block w-full text-left px-4 py-2 hover:bg-gray-100"
+                                    onClick={() => { setEditModalOpen(true); setMenuOpen(false); }}
+                                >
+                                    Edit Board
+                                </button>
+                                <button
+                                    className="font-medium text-[#EA5555] text-[13px] leading-[23px] block w-full text-left px-4 py-2 hover:bg-gray-100"
+                                    onClick={() => { setDeleteModalOpen(true); setMenuOpen(false) }}
+                                >
+                                    Delete Board
+                                </button>
+                            </div>
+                        )}
+                        {editModalOpen && (
+                            <EditBoardModal
+                                board={selectedBoard}
+                                onClose={() => setEditModalOpen(false)}
+                            />
+                        )}
+                        {deleteModalOpen && (
+                            <ConfirmModal
+                                title="Delete this board?"
+                                message={`Are you sure you want to delete the '${selectedBoard.name}' board? This action will remove all columns and tasks and cannot be reversed.`}
+                                danger
+                                onConfirm={() => {
+                                    deleteBoard(selectedBoard.name)
+                                    setDeleteModalOpen(false)
+                                }}
+                                onCancel={() => setDeleteModalOpen(false)}
+                            />
+                        )}
                     </div>
                 </div>
             </nav>

@@ -52,7 +52,8 @@ export default function EditBoardModal(
                         value={name}
                         onChange={e => setName(e.target.value)}
                     />
-                    {error === "Board name is required." && (
+
+                    {(error === "Board name is required." || error === "Board name must be unique.") && (
                         <p className="text-red-500 text-xs mb-2">{error}</p>
                     )}
 

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
-import type { Board } from "../types"
+import type { Board, Task } from "../types"
 import data from "../data/data.json"
 
 type BoardContextType = {
@@ -9,6 +9,7 @@ type BoardContextType = {
     addBoard: (board: Board) => void
     updateBoard: (board: Board) => void
     deleteBoard: (boardName: string) => void
+    addTask: (columnName: string, newtask: Task) => void
 }
 
 const BoardContext = createContext<BoardContextType | undefined>(undefined)
@@ -18,8 +19,6 @@ export function useBoard() {
     if (!context) throw new Error("useBoard must be used within BoardProvider")
     return context
 }
-
-
 
 export function BoardProvider({ children }: { children: ReactNode }) {
     const [selectedBoard, setSelectedBoard] = useState<Board>(data.boards[0])
@@ -48,6 +47,30 @@ export function BoardProvider({ children }: { children: ReactNode }) {
         })
     }
 
+    function addTask(columnName: string, newtask: Task) {
+        setBoards(prevBoards => {
+            const updatedBoards = prevBoards.map(board =>
+                board.name === selectedBoard.name
+                    ? {
+                        ...board,
+                        columns: board.columns.map(col =>
+                            col.name === columnName
+                                ? { ...col, tasks: [...(col.tasks ?? []), newtask] }
+                                : col
+                        )
+                    }
+                    : board
+            )
+
+            const updatedSelected = updatedBoards.find(b => b.name === selectedBoard.name);
+            if (updatedSelected) {
+                setSelectedBoard(updatedSelected)
+            };
+            return updatedBoards;
+
+        })
+    }
+
     return (
         <BoardContext.Provider
             value={{
@@ -56,7 +79,8 @@ export function BoardProvider({ children }: { children: ReactNode }) {
                 boards,
                 addBoard,
                 updateBoard,
-                deleteBoard
+                deleteBoard,
+                addTask
             }}
         >
             {children}

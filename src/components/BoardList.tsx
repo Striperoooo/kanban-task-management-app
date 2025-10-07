@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useBoard } from '../contexts/BoardContext';
-import CreateBoardModal from './CreateBoardModal';
+import AddBoardModal from './AddBoardModal';
 
 export default function BoardList() {
     const { boards, selectedBoard, setSelectedBoard } = useBoard()
@@ -63,57 +63,10 @@ export default function BoardList() {
             </div >
 
             {showBoardModal && (
-                <CreateBoardModal onClose={() => setShowBoardModal(false)} />
+                <AddBoardModal onClose={() => setShowBoardModal(false)} />
             )}
 
         </>
     )
 }
-
-// export default function BoardList() {
-//     const { boards, selectedBoard, setSelectedBoard } = useBoard();
-//     const [showModal, setShowModal] = useState(false);
-
-//     return (
-//         <>
-//             <p className="text-heading pl-6 mt-4 text-medium-grey font-bold text-xs tracking-[2.4px]">
-//                 ALL BOARDS ({boards.length})
-//             </p>
-//             <div className="kanban-boards-container mt-4 pl-6">
-//                 {boards.map((board) => {
-//                     const isSelected = board.name === selectedBoard.name;
-//                     return (
-//                         <div
-//                             key={board.name}
-//                             className={[
-//                                 "group flex text-[15px] font-bold items-center py-3.5 gap-3 cursor-pointer",
-//                                 "rounded-tr-full rounded-br-full -ml-6 mr-6",
-//                                 isSelected
-//                                     ? "bg-main-purple text-white"
-//                                     : "text-medium-grey hover:bg-main-purple-second-hover hover:text-main-purple",
-//                             ].join(" ")}
-//                             onClick={() => setSelectedBoard(board)}
-//                         >
-//                             <div className="pl-6 flex items-center gap-3">
-//                                 {/* ...svg... */}
-//                                 <p>{board.name}</p>
-//                             </div>
-//                         </div>
-//                     );
-//                 })}
-//                 {/* Create New Board Button */}
-//                 <button
-//                     className="flex items-center gap-3 text-main-purple font-bold py-3.5 pl-6 hover:underline"
-//                     onClick={() => setShowModal(true)}
-//                 >
-//                     <span className="text-xl">+</span> Create New Board
-//                 </button>
-//             </div>
-//             {showModal && (
-//                 <CreateBoardModal onClose={() => setShowModal(false)} />
-//             )}
-//         </>
-//     );
-// }
-
 

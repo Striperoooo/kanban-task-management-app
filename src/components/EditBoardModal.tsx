@@ -4,7 +4,8 @@ import type { Board } from "../types";
 import iconCross from '../assets/icon-cross.svg';
 
 export default function EditBoardModal(
-    { board, onClose }: { board: Board, onClose: () => void }) {
+    { board, onClose }: { board: Board, onClose: () => void }
+) {
 
     const { setSelectedBoard, updateBoard } = useBoard();
     const [name, setName] = useState(board.name);

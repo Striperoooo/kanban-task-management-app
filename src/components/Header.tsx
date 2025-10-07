@@ -8,6 +8,7 @@ import { useSidebar } from '../contexts/SidebarContext';
 import { useBoard } from '../contexts/BoardContext';
 import EditBoardModal from './EditBoardModal'
 import ConfirmModal from './ConfirmModal'
+import TaskFormModal from './TaskFormModal'
 
 export default function Header() {
 
@@ -18,6 +19,8 @@ export default function Header() {
     const [editModalOpen, setEditModalOpen] = useState(false)
 
     const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+
+    const [taskFormModalOpen, setTaskFormModalOpen] = useState(false)
 
     return (
         <header className='py-4 px-4 h-16 relative'>
@@ -32,10 +35,13 @@ export default function Header() {
                     <img src={isOpen ? iconChevUp : iconChevDown} alt="toggle sidebar icon" className='mt-1 w-2 h-1.5' />
                 </div>
 
-                <div className='ml-auto flex'>
-                    <div className='bg-main-purple py-2.5 px-[18px] rounded-3xl cursor-pointer mr-4'>
+                <div className='ml-auto flex items-center'>
+                    <button
+                        className='bg-main-purple py-2.5 px-[18px] rounded-3xl cursor-pointer mr-4 hover:bg-main-purple-hover'
+                        onClick={() => setTaskFormModalOpen(true)}
+                    >
                         <img src={iconAddTask} alt="add task icon" className='w-3 h-3' />
-                    </div>
+                    </button>
 
                     <div className='relative'>
                         <div
@@ -60,12 +66,14 @@ export default function Header() {
                                 </button>
                             </div>
                         )}
+
                         {editModalOpen && (
                             <EditBoardModal
                                 board={selectedBoard}
                                 onClose={() => setEditModalOpen(false)}
                             />
                         )}
+
                         {deleteModalOpen && (
                             <ConfirmModal
                                 title="Delete this board?"
@@ -78,6 +86,13 @@ export default function Header() {
                                 onCancel={() => setDeleteModalOpen(false)}
                             />
                         )}
+
+                        {taskFormModalOpen && (
+                            <TaskFormModal
+                                onClose={() => setTaskFormModalOpen(false)}
+                            />
+                        )}
+
                     </div>
                 </div>
             </nav>

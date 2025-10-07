@@ -2,7 +2,7 @@ import { useState } from "react"
 import { useBoard } from "../contexts/BoardContext"
 import iconCross from '../assets/icon-cross.svg'
 
-export default function CreateBoardModal({ onClose }: { onClose: () => void }) {
+export default function AddBoardModal({ onClose }: { onClose: () => void }) {
     const { boards, setSelectedBoard, addBoard } = useBoard()
     const [name, setName] = useState("")
     const [error, setError] = useState("")

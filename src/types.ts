@@ -9,7 +9,7 @@ export interface Task {
     title: string
     description: string
     status: string
-    subtasks: Subtask[]
+    subtasks?: Subtask[]
 }
 
 export interface TaskProps {
@@ -19,7 +19,7 @@ export interface TaskProps {
 
 export interface Column {
     name: string
-    tasks: Task[]
+    tasks?: Task[]
 }
 
 export interface ColumnProps {

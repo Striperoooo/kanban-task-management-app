@@ -1,20 +1,46 @@
 import { useState } from "react";
+import { useBoard } from "../contexts/BoardContext";
 import iconCross from '../assets/icon-cross.svg'
 
 export default function TaskFormModal({ onClose }: { onClose: () => void }) {
+
+    const { selectedBoard, addTask } = useBoard();
+
+    const statusOptions = selectedBoard.columns.map(col => col.name);
     const [title, setTitle] = useState("");
     const [desc, setDesc] = useState("");
     const [subtasks, setSubtasks] = useState<string[]>([""]);
-    const [status, setStatus] = useState("");
+    const [status, setStatus] = useState(statusOptions[0] || "");
+    const [error, setError] = useState("");
 
-    // TODO: Replace with actual board columns from context
-    const statusOptions = ["Todo", "Doing", "Done"];
+    function handleSubmit(e: React.FormEvent) {
+        e.preventDefault();
+        if (!title.trim()) {
+            setError("Task title is required.");
+            return;
+        }
+
+        const newTask = {
+            title: title.trim(),
+            description: desc.trim(),
+            status,
+            subtasks: subtasks.filter(st => st.trim() !== "").map(st => ({
+                title: st.trim(),
+                isCompleted: false
+            }))
+
+        }
+
+        addTask(status, newTask)
+        onClose()
+
+    }
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50" onClick={onClose}>
             <div className="bg-white rounded-md p-6 min-w-[320px] max-w-[90vw] max-h-[calc(100vh-2rem)] overflow-y-auto" onClick={e => e.stopPropagation()}>
                 <h2 className="font-bold text-lg mb-6">Add New Task</h2>
-                <form>
+                <form onSubmit={handleSubmit}>
                     <label className="block font-bold text-xs text-medium-grey mb-2">Title</label>
                     <input
                         className="font-medium text-[13px] leading-[23px] py-2 px-4 border border-[#828FA3] border-opacity-25 rounded-sm p-2 w-full"
@@ -22,6 +48,9 @@ export default function TaskFormModal({ onClose }: { onClose: () => void }) {
                         value={title}
                         onChange={e => setTitle(e.target.value)}
                     />
+                    {error === "Task title is required." && (
+                        <p className="text-red-500 text-xs mt-1 mb-2">{error}</p>
+                    )}
 
                     <label className="block font-bold text-xs text-medium-grey mt-6 mb-2">Description</label>
                     <textarea
@@ -64,12 +93,12 @@ export default function TaskFormModal({ onClose }: { onClose: () => void }) {
 
                     <label className="block font-bold text-xs text-medium-grey mt-6 mb-2">Status</label>
                     <select
-                        className="font-medium text-[13px] leading-[23px] py-2 px-4 border border-[#828FA3] border-opacity-25 rounded-sm p-2 w-full"
+                        className="font-medium bg-white text-[13px] leading-[23px] py-2 px-4 border border-[#828FA3] border-opacity-25 rounded-sm p-2 w-full"
                         value={status}
                         onChange={e => setStatus(e.target.value)}
                     >
                         <option value="" disabled>Select status</option>
-                        {statusOptions.map(opt => (
+                        {statusOptions.map((opt) => (
                             <option key={opt} value={opt}>{opt}</option>
                         ))}
                     </select>

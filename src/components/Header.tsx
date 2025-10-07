@@ -32,7 +32,7 @@ export default function Header() {
                     <img src={isOpen ? iconChevUp : iconChevDown} alt="toggle sidebar icon" className='mt-1 w-2 h-1.5' />
                 </div>
 
-                <div className='ml-auto flex'>
+                <div className='ml-auto flex items-center'>
                     <div className='bg-main-purple py-2.5 px-[18px] rounded-3xl cursor-pointer mr-4'>
                         <img src={iconAddTask} alt="add task icon" className='w-3 h-3' />
                     </div>

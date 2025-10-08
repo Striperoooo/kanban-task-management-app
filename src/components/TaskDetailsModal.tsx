@@ -1,4 +1,5 @@
 import type { Task } from "../types";
+import EllipsisMenu from "./EllipsisMenu";
 
 export default function TaskDetailsModal({ task, onClose }: { task: Task, onClose: () => void }) {
     const completed = task.subtasks.filter(st => st.isCompleted).length
@@ -13,7 +14,16 @@ export default function TaskDetailsModal({ task, onClose }: { task: Task, onClos
                 className="bg-white rounded-lg p-6 min-w-[320px] max-w-[90vw] relative"
                 onClick={e => e.stopPropagation()}
             >
-                <h2 className="font-bold text-lg mb-2">{task.title}</h2>
+                <div className="flex items-center justify-between mb-2">
+                    <h2 className="font-bold text-lg">{task.title}</h2>
+                    <EllipsisMenu
+                        items={[
+                            { label: "Edit Task", onClick: () => alert("Edit Task clicked") },
+                            { label: "Delete Task", onClick: () => alert("Delete Task clicked"), danger: true }
+                        ]}
+                    />
+                </div>
+
                 <p className="font-medium text-[13px] text-medium-grey leading-[23px] mb-4">{task.description}</p>
 
                 <span className="inline-block font-bold text-xs text-medium-grey mb-4">

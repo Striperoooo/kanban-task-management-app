@@ -9,13 +9,13 @@ import { useBoard } from '../contexts/BoardContext';
 import EditBoardModal from './EditBoardModal'
 import ConfirmModal from './ConfirmModal'
 import TaskFormModal from './TaskFormModal'
+import EllipsisMenu from './EllipsisMenu'
 
 export default function Header() {
 
     const { isOpen, toggle, close } = useSidebar()
     const { selectedBoard, deleteBoard } = useBoard()
 
-    const [menuOpen, setMenuOpen] = useState(false)
     const [editModalOpen, setEditModalOpen] = useState(false)
 
     const [deleteModalOpen, setDeleteModalOpen] = useState(false)
@@ -43,57 +43,48 @@ export default function Header() {
                         <img src={iconAddTask} alt="add task icon" className='w-3 h-3' />
                     </button>
 
-                    <div className='relative'>
-                        <div
-                            className='inline-flex items-center justify-center p-1 -m-1 cursor-pointer'
-                            onClick={() => setMenuOpen(prev => !prev)}
-                        >
-                            <img src={iconEllipsis} alt="ellipsis icon" className='h-3' />
-                        </div>
-                        {menuOpen && (
-                            <div className="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded z-50">
-                                <button
-                                    className="font-medium text-medium-grey text-[13px] leading-[23px] block w-full text-left px-4 py-2 hover:bg-gray-100"
-                                    onClick={() => { setEditModalOpen(true); setMenuOpen(false); }}
-                                >
-                                    Edit Board
-                                </button>
-                                <button
-                                    className="font-medium text-[#EA5555] text-[13px] leading-[23px] block w-full text-left px-4 py-2 hover:bg-gray-100"
-                                    onClick={() => { setDeleteModalOpen(true); setMenuOpen(false) }}
-                                >
-                                    Delete Board
-                                </button>
-                            </div>
-                        )}
 
-                        {editModalOpen && (
-                            <EditBoardModal
-                                board={selectedBoard}
-                                onClose={() => setEditModalOpen(false)}
-                            />
-                        )}
+                    <EllipsisMenu
+                        items={[
+                            {
+                                label: "Edit Board",
+                                onClick: () => setEditModalOpen(true)
+                            },
+                            {
+                                label: "Delete Board",
+                                onClick: () => setDeleteModalOpen(true),
+                                danger: true
+                            }
+                        ]}
+                    />
 
-                        {deleteModalOpen && (
-                            <ConfirmModal
-                                title="Delete this board?"
-                                message={`Are you sure you want to delete the '${selectedBoard.name}' board? This action will remove all columns and tasks and cannot be reversed.`}
-                                danger
-                                onConfirm={() => {
-                                    deleteBoard(selectedBoard.name)
-                                    setDeleteModalOpen(false)
-                                }}
-                                onCancel={() => setDeleteModalOpen(false)}
-                            />
-                        )}
+                    {editModalOpen && (
+                        <EditBoardModal
+                            board={selectedBoard}
+                            onClose={() => setEditModalOpen(false)}
+                        />
+                    )}
 
-                        {taskFormModalOpen && (
-                            <TaskFormModal
-                                onClose={() => setTaskFormModalOpen(false)}
-                            />
-                        )}
+                    {deleteModalOpen && (
+                        <ConfirmModal
+                            title="Delete this board?"
+                            message={`Are you sure you want to delete the '${selectedBoard.name}' board? This action will remove all columns and tasks and cannot be reversed.`}
+                            danger
+                            onConfirm={() => {
+                                deleteBoard(selectedBoard.name)
+                                setDeleteModalOpen(false)
+                            }}
+                            onCancel={() => setDeleteModalOpen(false)}
+                        />
+                    )}
 
-                    </div>
+                    {taskFormModalOpen && (
+                        <TaskFormModal
+                            onClose={() => setTaskFormModalOpen(false)}
+                        />
+                    )}
+
+
                 </div>
             </nav>
         </header>

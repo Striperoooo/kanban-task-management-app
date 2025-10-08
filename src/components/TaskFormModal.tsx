@@ -40,6 +40,7 @@ export default function TaskFormModal({ onClose }: { onClose: () => void }) {
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50" onClick={onClose}>
             <div className="bg-white rounded-md p-6 min-w-[320px] max-w-[90vw] max-h-[calc(100vh-2rem)] overflow-y-auto" onClick={e => e.stopPropagation()}>
                 <h2 className="font-bold text-lg mb-6">Add New Task</h2>
+
                 <form onSubmit={handleSubmit}>
                     <label className="block font-bold text-xs text-medium-grey mb-2">Title</label>
                     <input

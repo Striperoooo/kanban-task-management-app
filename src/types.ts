@@ -47,6 +47,12 @@ export interface ConfirmModalProps {
     danger?: boolean
 }
 
+export interface MenuItem {
+    label: string
+    onClick: () => void
+    danger?: boolean
+}
+
 // UI State types
 export interface AppState {
     boards: Board[]

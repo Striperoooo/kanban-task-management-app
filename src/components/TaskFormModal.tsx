@@ -1,16 +1,28 @@
 import { useState } from "react";
 import { useBoard } from "../contexts/BoardContext";
 import iconCross from '../assets/icon-cross.svg'
+import type { Task } from "../types"
 
-export default function TaskFormModal({ onClose }: { onClose: () => void }) {
+export default function TaskFormModal({
+    onClose,
+    mode = "add",
+    initialTask,
+}: {
+    onClose: () => void,
+    mode?: "add" | "edit",
+    initialTask?: Task,
+}) {
 
-    const { selectedBoard, addTask } = useBoard();
+
+    const { selectedBoard, addTask, editTask } = useBoard();
 
     const statusOptions = selectedBoard.columns.map(col => col.name);
-    const [title, setTitle] = useState("");
-    const [desc, setDesc] = useState("");
-    const [subtasks, setSubtasks] = useState<string[]>([""]);
-    const [status, setStatus] = useState(statusOptions[0] || "");
+    const [title, setTitle] = useState(initialTask?.title || "");
+    const [desc, setDesc] = useState(initialTask?.description || "");
+    const [subtasks, setSubtasks] = useState(
+        initialTask?.subtasks?.map(st => st.title) || [""]
+    );
+    const [status, setStatus] = useState(initialTask?.status || statusOptions[0] || "");
     const [error, setError] = useState("");
 
     function handleSubmit(e: React.FormEvent) {
@@ -31,7 +43,14 @@ export default function TaskFormModal({ onClose }: { onClose: () => void }) {
 
         }
 
-        addTask(status, newTask)
+        console.debug('[TaskFormModal] submit mode:', mode, 'initialTask:', initialTask, 'status:', status)
+
+        if (mode === "edit") {
+            // original column is where the task currently lives (initialTask.status)
+            editTask(initialTask?.status ?? status, newTask, initialTask?.title ?? "")
+        } else {
+            addTask(status, newTask)
+        }
         onClose()
 
     }
@@ -39,7 +58,9 @@ export default function TaskFormModal({ onClose }: { onClose: () => void }) {
     return (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50" onClick={onClose}>
             <div className="bg-white rounded-md p-6 min-w-[320px] max-w-[90vw] max-h-[calc(100vh-2rem)] overflow-y-auto" onClick={e => e.stopPropagation()}>
-                <h2 className="font-bold text-lg mb-6">Add New Task</h2>
+                <h2 className="font-bold text-lg mb-6">
+                    {mode === "edit" ? "Edit Task" : "Add New Task"}
+                </h2>
 
                 <form onSubmit={handleSubmit}>
                     <label className="block font-bold text-xs text-medium-grey mb-2">Title</label>
@@ -109,7 +130,7 @@ export default function TaskFormModal({ onClose }: { onClose: () => void }) {
                             type="submit"
                             className="w-full bg-main-purple font-bold text-center text-white text-[13px] leading-[23px] rounded-[20px] hover:bg-main-purple-hover py-2 mb-6"
                         >
-                            Create New Task
+                            {mode === "edit" ? "Save Changes" : "Create New Task"}
                         </button>
                     </div>
                 </form>

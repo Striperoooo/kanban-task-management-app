@@ -10,6 +10,7 @@ type BoardContextType = {
     updateBoard: (board: Board) => void
     deleteBoard: (boardName: string) => void
     addTask: (columnName: string, newtask: Task) => void
+    editTask: (columnName: string, updatedTask: Task, originalTitle: string) => void
 }
 
 const BoardContext = createContext<BoardContextType | undefined>(undefined)
@@ -71,6 +72,64 @@ export function BoardProvider({ children }: { children: ReactNode }) {
         })
     }
 
+    function editTask(
+        columnName: string,
+        updatedTask: Task,
+        originalTitle: string
+    ) {
+        console.debug('[BoardContext.editTask] selectedBoard:', selectedBoard?.name, 'columnName:', columnName, 'updatedTask.status:', updatedTask.status, 'originalTitle:', originalTitle)
+        setBoards(prevBoards => {
+            const updatedBoards = prevBoards.map(board => {
+                if (board.name !== selectedBoard.name) return board;
+
+                const originalColumnName = columnName;
+                const targetColumnName = updatedTask.status;
+
+                // If column didn't change, replace the task in-place
+                if (originalColumnName === targetColumnName) {
+                    return {
+                        ...board,
+                        columns: (board.columns ?? []).map(col =>
+                            col.name === originalColumnName
+                                ? {
+                                    ...col,
+                                    tasks: (col.tasks ?? []).map(task =>
+                                        task.title === originalTitle ? { ...updatedTask } : task
+                                    )
+                                }
+                                : col
+                        )
+                    };
+                }
+
+                // If column changed, remove from original and add to target
+                return {
+                    ...board,
+                    columns: (board.columns ?? []).map(col => {
+                        if (col.name === originalColumnName) {
+                            return {
+                                ...col,
+                                tasks: (col.tasks ?? []).filter(task => task.title !== originalTitle)
+                            };
+                        }
+
+                        if (col.name === targetColumnName) {
+                            return {
+                                ...col,
+                                tasks: [...(col.tasks ?? []), updatedTask]
+                            };
+                        }
+
+                        return col;
+                    })
+                };
+            });
+            const updatedSelected = updatedBoards.find(b => b.name === selectedBoard.name);
+            if (updatedSelected) setSelectedBoard(updatedSelected);
+            return updatedBoards;
+        });
+    }
+
     return (
         <BoardContext.Provider
             value={{
@@ -80,7 +139,8 @@ export function BoardProvider({ children }: { children: ReactNode }) {
                 addBoard,
                 updateBoard,
                 deleteBoard,
-                addTask
+                addTask,
+                editTask
             }}
         >
             {children}

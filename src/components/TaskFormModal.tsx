@@ -43,8 +43,6 @@ export default function TaskFormModal({
 
         }
 
-        console.debug('[TaskFormModal] submit mode:', mode, 'initialTask:', initialTask, 'status:', status)
-
         if (mode === "edit") {
             // original column is where the task currently lives (initialTask.status)
             editTask(initialTask?.status ?? status, newTask, initialTask?.title ?? "")

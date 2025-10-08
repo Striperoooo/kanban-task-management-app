@@ -6,7 +6,7 @@ export default function BoardView() {
 
     return (
         <>
-            <div className='board-container h-full flex overflow-x-auto gap-6  px-4 py-6'>
+            <div className='board-container h-full flex overflow-x-auto gap-6  px-6 py-6'>
                 {selectedBoard.columns.map((column) => (
                     <Column key={column.name} column={column} />
                 ))}

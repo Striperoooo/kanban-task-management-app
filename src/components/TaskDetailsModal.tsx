@@ -4,11 +4,13 @@ import EllipsisMenu from "./EllipsisMenu";
 export default function TaskDetailsModal({
     task,
     onClose,
-    onEdit
+    onEdit,
+    onDelete
 }: {
     task: Task,
     onClose: () => void,
-    onEdit: () => void
+    onEdit: () => void,
+    onDelete: () => void
 
 }) {
     const completed = task.subtasks.filter(st => st.isCompleted).length
@@ -28,7 +30,7 @@ export default function TaskDetailsModal({
                     <EllipsisMenu
                         items={[
                             { label: "Edit Task", onClick: onEdit },
-                            { label: "Delete Task", onClick: () => alert("Delete Task clicked"), danger: true }
+                            { label: "Delete Task", onClick: onDelete, danger: true }
                         ]}
                     />
                 </div>

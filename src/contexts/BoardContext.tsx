@@ -11,6 +11,7 @@ type BoardContextType = {
     deleteBoard: (boardName: string) => void
     addTask: (columnName: string, newtask: Task) => void
     editTask: (columnName: string, updatedTask: Task, originalTitle: string) => void
+    deleteTask: (columnName: string, title: string) => void
 }
 
 const BoardContext = createContext<BoardContextType | undefined>(undefined)
@@ -77,7 +78,6 @@ export function BoardProvider({ children }: { children: ReactNode }) {
         updatedTask: Task,
         originalTitle: string
     ) {
-        console.debug('[BoardContext.editTask] selectedBoard:', selectedBoard?.name, 'columnName:', columnName, 'updatedTask.status:', updatedTask.status, 'originalTitle:', originalTitle)
         setBoards(prevBoards => {
             const updatedBoards = prevBoards.map(board => {
                 if (board.name !== selectedBoard.name) return board;
@@ -130,6 +130,27 @@ export function BoardProvider({ children }: { children: ReactNode }) {
         });
     }
 
+    function deleteTask(columnName: string, title: string) {
+        setBoards(prevBoards => {
+            const updatedBoards = prevBoards.map(board => {
+                if (board.name !== selectedBoard.name) return board;
+
+                return {
+                    ...board,
+                    columns: (board.columns ?? []).map(col =>
+                        col.name === columnName
+                            ? { ...col, tasks: (col.tasks ?? []).filter(t => t.title !== title) }
+                            : col
+                    )
+                }
+            })
+
+            const updatedSelected = updatedBoards.find(b => b.name === selectedBoard.name);
+            if (updatedSelected) setSelectedBoard(updatedSelected);
+            return updatedBoards;
+        })
+    }
+
     return (
         <BoardContext.Provider
             value={{
@@ -141,6 +162,8 @@ export function BoardProvider({ children }: { children: ReactNode }) {
                 deleteBoard,
                 addTask,
                 editTask
+                ,
+                deleteTask
             }}
         >
             {children}

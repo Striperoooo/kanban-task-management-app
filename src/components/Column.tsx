@@ -3,14 +3,17 @@ import type { ColumnProps, Task } from "../types";
 import TaskCard from './TaskCard';
 import TaskDetailsModal from './TaskDetailsModal'
 import TaskFormModal from "./TaskFormModal";
+import ConfirmModal from './ConfirmModal'
 import { useBoard } from "../contexts/BoardContext";
 
 export default function Column({ column }: ColumnProps) {
     const [selectedTask, setSelectedTask] = useState<Task | null>(null)
     const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
     const [editModalOpen, setEditModalOpen] = useState(false)
+    const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
-    const { editTask } = useBoard()
+    const { deleteTask } = useBoard()
 
     return (
         <div className="column-container h-full flex flex-col">
@@ -42,6 +45,12 @@ export default function Column({ column }: ColumnProps) {
                         setEditModalOpen(true)
                         setSelectedTask(null)
                     }}
+                    onDelete={() => {
+                        // capture which task to delete and show confirm
+                        setTaskToDelete(selectedTask)
+                        setDeleteModalOpen(true)
+                        setSelectedTask(null)
+                    }}
                 />
             )}
 
@@ -52,6 +61,23 @@ export default function Column({ column }: ColumnProps) {
                     onClose={() => {
                         setEditModalOpen(false)
                         setTaskToEdit(null)
+                    }}
+                />
+            )}
+
+            {deleteModalOpen && taskToDelete && (
+                <ConfirmModal
+                    title="Delete this task?"
+                    message={`Are you sure you want to delete the '${taskToDelete.title}' task and its subtask? This action cannot be reversed.`}
+                    danger
+                    onConfirm={() => {
+                        deleteTask(column.name, taskToDelete.title)
+                        setDeleteModalOpen(false)
+                        setTaskToDelete(null)
+                    }}
+                    onCancel={() => {
+                        setDeleteModalOpen(false)
+                        setTaskToDelete(null)
                     }}
                 />
             )}

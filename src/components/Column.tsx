@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { ColumnProps, Task } from "../types";
 import TaskCard from './TaskCard';
 import TaskDetailsModal from './TaskDetailsModal'
@@ -13,7 +13,28 @@ export default function Column({ column }: ColumnProps) {
     const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
-    const { deleteTask } = useBoard()
+    const { deleteTask, selectedBoard } = useBoard()
+
+    // keep selectedTask fresh when selectedBoard changes (e.g., after edits)
+    useEffect(() => {
+        if (!selectedTask) return;
+
+        // find latest task by title across columns
+        let latest: Task | null = null;
+        for (const col of (selectedBoard.columns ?? [])) {
+            const found = (col.tasks ?? []).find(t => t.title === selectedTask.title);
+            if (found) {
+                latest = { ...found, status: col.name };
+                break;
+            }
+        }
+
+        if (!latest) {
+            setSelectedTask(null);
+        } else {
+            setSelectedTask(latest);
+        }
+    }, [selectedBoard]);
 
     return (
         <div className="column-container h-full flex flex-col">
@@ -23,15 +44,15 @@ export default function Column({ column }: ColumnProps) {
                 </span>
                 {column.name.toUpperCase()}
                 <span className="ml-1 column-task-count">
-                    ({column.tasks.length})
+                    ({(column.tasks ?? []).length})
                 </span>
             </h2>
 
-            {column.tasks.map(task => (
+            {(column.tasks ?? []).map(task => (
                 <TaskCard
                     key={task.title}
                     task={task}
-                    onClick={() => setSelectedTask(task)}
+                    onClick={() => setSelectedTask({ ...task, status: column.name })}
                 />
             ))}
 

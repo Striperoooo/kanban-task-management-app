@@ -1,5 +1,7 @@
+import { useState } from "react";
 import type { Task } from "../types";
 import EllipsisMenu from "./EllipsisMenu";
+import { useBoard } from "../contexts/BoardContext";
 
 export default function TaskDetailsModal({
     task,
@@ -13,8 +15,25 @@ export default function TaskDetailsModal({
     onDelete: () => void
 
 }) {
-    const completed = task.subtasks.filter(st => st.isCompleted).length
-    const total = task.subtasks.length
+    const { selectedBoard, toggleSubtask, editTask } = useBoard();
+
+    const completed = (task.subtasks ?? []).filter(st => st.isCompleted).length;
+    const total = (task.subtasks ?? []).length;
+
+    const statusOptions = (selectedBoard.columns ?? []).map(col => col.name);
+    const [status, setStatus] = useState<string>(task.status ?? (statusOptions[0] ?? ""));
+
+    function handleToggleSubtask(index: number) {
+        toggleSubtask(task.status, task.title, index);
+    }
+
+    function handleStatusChange(e: React.ChangeEvent<HTMLSelectElement>) {
+        const newStatus = e.target.value;
+        setStatus(newStatus);
+
+        const updatedTask: Task = { ...task, status: newStatus };
+        editTask(task.status, updatedTask, task.title);
+    }
 
     return (
         <div
@@ -26,7 +45,7 @@ export default function TaskDetailsModal({
                 onClick={e => e.stopPropagation()}
             >
                 <div className="flex items-center justify-between mb-2">
-                    <h2 className="font-bold text-lg max-w-[99%]">{task.title}</h2>
+                    <h2 className="font-bold text-lg max-w-[80%]">{task.title}</h2>
                     <EllipsisMenu
                         items={[
                             { label: "Edit Task", onClick: onEdit },
@@ -41,20 +60,44 @@ export default function TaskDetailsModal({
                     Subtasks ({completed} of {total})
                 </span>
 
-                <ul>
-                    {task.subtasks.map((sub, i) => (
-                        <li
-                            key={i}
-                            className="flex items-center gap-4 font-bold text-xs bg-light-bg p-3 mb-2 "
-                        >
-                            <input type="checkbox" checked={sub.isCompleted} readOnly className="" />
-                            {sub.title}
-                        </li>
-                    ))}
+                <ul className="mb-4">
+                    {(task.subtasks ?? []).map((sub, i) => {
+                        // prefer a stable id here (task.id + i) when you add task ids
+                        const inputId = `subtask-${(task.title || 'task').replace(/\s+/g, '-').toLowerCase()}-${i}`;
+
+                        return (
+                            <li key={inputId} className="mb-2">
+                                <label
+                                    htmlFor={inputId}
+                                    className="flex items-center gap-4 font-bold text-xs bg-light-bg p-3 cursor-pointer hover:bg-main-purple/25 rounded-sm"
+                                >
+                                    <input
+                                        id={inputId}
+                                        type="checkbox"
+                                        checked={sub.isCompleted}
+                                        onChange={() => handleToggleSubtask(i)}
+                                        className="shrink-0"
+                                    />
+                                    <span className={sub.isCompleted ? "line-through text-medium-grey" : ""}>
+                                        {sub.title}
+                                    </span>
+                                </label>
+                            </li>
+                        )
+                    })}
                 </ul>
 
-                <span className="inline-block font-bold text-xs text-medium-grey mb-2">Current Status</span>
-                <p>THIS A DROPDOWN BLUD</p>
+                <label className="inline-block font-bold text-xs text-medium-grey mb-2">Current Status</label>
+                <select
+                    className="font-medium bg-white text-[13px] leading-[23px] py-2 px-4 border border-[#828FA3] border-opacity-25 rounded-sm p-2 w-full"
+                    value={status}
+                    onChange={handleStatusChange}
+                >
+                    <option value="" disabled>Select status</option>
+                    {statusOptions.map(opt => (
+                        <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                </select>
             </div>
         </div>
     )

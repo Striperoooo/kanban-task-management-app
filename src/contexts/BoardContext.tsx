@@ -12,6 +12,8 @@ type BoardContextType = {
     addTask: (columnName: string, newtask: Task) => void
     editTask: (columnName: string, updatedTask: Task, originalTitle: string) => void
     deleteTask: (columnName: string, title: string) => void
+    toggleSubtask: (columnName: string, taskTitle: string, subtaskIndex: number) => void
+
 }
 
 const BoardContext = createContext<BoardContextType | undefined>(undefined)
@@ -151,6 +153,38 @@ export function BoardProvider({ children }: { children: ReactNode }) {
         })
     }
 
+    function toggleSubtask(columnName: string, taskTitle: string, subtaskIndex: number) {
+        setBoards(prevBoards => {
+            const updatedBoards = prevBoards.map(board => {
+                if (board.name !== selectedBoard.name) return board;
+
+                return {
+                    ...board,
+                    columns: (board.columns ?? []).map(col => {
+                        if (col.name !== columnName) return col;
+
+                        return {
+                            ...col,
+                            tasks: (col.tasks ?? []).map(task => {
+                                if (task.title !== taskTitle) return task;
+
+                                const newSubtasks = (task.subtasks ?? []).map((st, i) =>
+                                    i === subtaskIndex ? { ...st, isCompleted: !st.isCompleted } : st
+                                );
+
+                                return { ...task, subtasks: newSubtasks };
+                            })
+                        };
+                    })
+                };
+            });
+
+            const updatedSelected = updatedBoards.find(b => b.name === selectedBoard.name);
+            if (updatedSelected) setSelectedBoard(updatedSelected);
+            return updatedBoards;
+        });
+    }
+
     return (
         <BoardContext.Provider
             value={{
@@ -163,7 +197,8 @@ export function BoardProvider({ children }: { children: ReactNode }) {
                 addTask,
                 editTask
                 ,
-                deleteTask
+                deleteTask,
+                toggleSubtask
             }}
         >
             {children}

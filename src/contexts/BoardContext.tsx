@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
-import type { Board, Task } from "../types"
+import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import type { Board, Task, KanbanData } from "../types"
 import data from "../data/data.json"
+import { loadData, saveData, clearData } from "../lib/storage"
 
 type BoardContextType = {
     selectedBoard: Board
@@ -25,11 +26,22 @@ export function useBoard() {
 }
 
 export function BoardProvider({ children }: { children: ReactNode }) {
-    const [selectedBoard, setSelectedBoard] = useState<Board>(data.boards[0])
-    const [boards, setBoards] = useState<Board[]>(data.boards)
+
+    // Load initial data using storage helpers (loadData falls back to data.json)
+    const initialData: KanbanData = loadData()
+    const [boards, setBoards] = useState<Board[]>(initialData.boards ?? data.boards)
+    const initialSelectedName = initialData.selectedBoardName ?? initialData.boards?.[0]?.name ?? data.boards[0].name
+    const [selectedBoard, setSelectedBoard] = useState<Board>(
+        (initialData.boards ?? data.boards).find(b => b.name === initialSelectedName) ?? (initialData.boards ?? data.boards)[0] ?? data.boards[0]
+    )
 
     function addBoard(newBoard: Board) {
-        setBoards(prev => [...prev, newBoard])
+        setBoards(prev => {
+            const next = [...prev, newBoard]
+            // persist change
+            try { saveData({ boards: next, selectedBoardName: newBoard.name }) } catch { }
+            return next
+        })
         setSelectedBoard(newBoard)
     }
 
@@ -46,7 +58,9 @@ export function BoardProvider({ children }: { children: ReactNode }) {
     function deleteBoard(boardName: string) {
         setBoards(prev => {
             const filtered = prev.filter(b => b.name !== boardName)
-            setSelectedBoard(filtered[0] || null)
+            const nextSelected = filtered[0] ?? data.boards[0]
+            try { saveData({ boards: filtered, selectedBoardName: nextSelected.name }) } catch { }
+            setSelectedBoard(nextSelected)
             return filtered
         })
     }
@@ -146,11 +160,30 @@ export function BoardProvider({ children }: { children: ReactNode }) {
                     )
                 }
             })
-
             const updatedSelected = updatedBoards.find(b => b.name === selectedBoard.name);
             if (updatedSelected) setSelectedBoard(updatedSelected);
+            try { saveData({ boards: updatedBoards, selectedBoardName: selectedBoard.name }) } catch { }
             return updatedBoards;
         })
+    }
+
+    // Persist boards + selectedBoardName whenever boards or selectedBoard changes
+    useEffect(() => {
+        try {
+            saveData({ boards, selectedBoardName: selectedBoard.name })
+        } catch {
+            // ignore storage errors
+        }
+    }, [boards, selectedBoard?.name])
+
+    function resetToDefault() {
+        try {
+            clearData()
+        } catch {
+
+        }
+        setBoards(data.boards)
+        setSelectedBoard(data.boards[0])
     }
 
     function toggleSubtask(columnName: string, taskTitle: string, subtaskIndex: number) {

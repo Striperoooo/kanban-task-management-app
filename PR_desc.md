@@ -1,76 +1,67 @@
 ## What
 
-Day 9 — Subtasks behavior & Task Details status
+Day 11 — Persistence (localStorage)
 
-Implemented interactive subtasks in the Task Details modal (check/uncheck), live subtask progress count, and a functional status dropdown in the Task Details modal that can move a task between columns. Added a context method to toggle subtasks and kept the UI in sync by re-syncing the selected task when the board changes. Also improved keyboard accessibility for the subtask rows.
+Implemented loading boards from `localStorage` (if present) on app start and saving the full boards structure to `localStorage` whenever boards change. Also persisted the currently selected board so the app restores the last-open board after a reload, and added a `resetToDefault()` helper to clear storage and reset to the original seed data (dev helper).
 
-## Changes
+## Changes (persistence only)
 
-- ✅ Subtask Toggle: Subtasks in the Task Details modal are now interactive checkboxes (click row or checkbox to toggle).
-- ✅ Live Progress: Subtask completion count updates in real time (e.g. 0 of 3 → 1 of 3).
-- ✅ Status Dropdown (in Details): Current Status is now a dropdown in the Task Details modal; changing it updates the task and moves it between columns when needed.
-- ✅ Context API: Added `toggleSubtask(columnName, taskTitle, subtaskIndex)` in `BoardContext` to flip a subtask's `isCompleted` value and update `selectedBoard`.
-- ✅ UI Sync: `Column` now re-finds/resyncs the selected task from `selectedBoard` when the board changes, keeping the modal view current (or closing it if the task was deleted).
-- ✅ Accessibility: Subtask rows are keyboard accessible (Enter/Space toggles) and the checkbox input stops propagation to avoid double-toggle.
-- ✅ Defensive code: Used nullish coalescing for `columns`/`tasks` where relevant to avoid runtime errors.
+- ✅ Load on start: read saved boards from `localStorage` under key `kanban.boards`; fall back to `data.json` if no saved data or parsing errors.
+- ✅ Save on change: write the full `boards` object to `localStorage` whenever `boards` state changes.
+- ✅ Restore selection: save the active board name under `kanban.selectedBoard` and restore that selection on startup (so refresh returns to the board you were on).
+- ✅ Reset helper: `resetToDefault()` clears `kanban.boards` (and resets in-memory state to the seed data) so you can quickly return to the original dataset.
 
-## How to Test
+Note: The implementation was then refactored to use the new storage helpers in `src/lib/storage.ts` which use a single key (`kanban-data`) to store a `KanbanData` object. That object contains both `boards` and `selectedBoardName`. The provider now calls `loadData()` on startup and `saveData()` whenever `boards` or the selected board changes; `resetToDefault()` calls `clearData()`.
+
+## How to Test (persistence)
 
 1. Checkout branch:
-   ```bash
-   git checkout feat/subtasks
-   ```
+	```bash
+	git checkout feat/persistence-localstorage
+	```
 2. Install and run:
-   ```bash
-   npm install
-   npm run dev
-   ```
-3. Open the app (e.g. http://localhost:5173/)
-4. Subtask toggle:
-   1. Open a board and open a task (Task Details modal).
-   2. Click a subtask row (not just the checkbox) — it should toggle.
-   3. Click the checkbox directly — it should toggle (and not double-toggle).
-   4. Tab to a subtask row and press Enter or Space — it should toggle.
-   5. Confirm the "Subtasks (X of Y)" count updates immediately.
-5. Status change:
-   1. In the same Task Details modal, change the "Current Status" dropdown to another column.
-   2. Confirm the task is removed from the original column and appears in the target column.
-   3. Confirm column task counts update accordingly.
-6. Edge checks:
-   1. Open a task, then delete it via the delete flow — the modal should close and the task be removed.
-   2. Try toggling subtasks for tasks with no subtasks (nothing should crash).
+	```bash
+	npm install
+	npm run dev
+	```
+3. Open the app and verify initial load:
+	- On first run (or after clearing storage) the app should load the seed data from `data.json`.
+4. Make a change and verify save:
+	- Add/edit/delete a task or toggle a subtask, then refresh the page. The change should persist.
+5. Verify selected-board restore:
+	- Switch to a different board (e.g. Board 4), refresh the page, and confirm the same board is selected after reload.
+6. Reset to default:
+	- Call `resetToDefault()` (temporarily expose it from the provider value or run `localStorage.removeItem('kanban-data')` in the console) and confirm the app returns to the seed data on reload.
 7. Optional: run TypeScript check locally:
-   ```bash
-   npx tsc --noEmit
-   ```
+	```bash
+	npx tsc --noEmit
+	```
 
-## Files Changed
+## Files Changed (persistence)
 
-- `src/components/TaskDetailsModal.tsx` — interactive subtasks (checkbox + row click), keyboard handlers, status dropdown wired to `editTask`  
-- `src/contexts/BoardContext.tsx` — added `toggleSubtask(columnName, taskTitle, subtaskIndex)` and exposed it via context  
-- `src/components/Column.tsx` — set `selectedTask` with the column name when opening; added re-sync effect to refresh `selectedTask` from `selectedBoard` on updates
+- `src/contexts/BoardContext.tsx` — added localStorage load/save for `boards` and `kanban.selectedBoard`, added `resetToDefault()` helper, and initialized state from stored data when present.
+ - `src/contexts/BoardContext.tsx` — now uses `loadData()`/`saveData()` from `src/lib/storage.ts`, initializes state from stored data, and calls `saveData()` when `boards` or the selected board changes. `resetToDefault()` calls `clearData()`.
+ - `src/lib/storage.ts` — new storage utilities `loadData()`, `saveData()`, and `clearData()` that read/write a single `kanban-data` key in localStorage containing `{ boards, selectedBoardName }`.
+ - `src/types.ts` — extended `KanbanData` type to include `selectedBoardName`.
+ - `PR_desc.md` — this PR description file.
+
+If you added a separate storage utility module (e.g. `src/lib/storage.ts`) include that file in the PR as well.
 
 ## Notes
 
-- Current matching uses `task.title` to identify tasks (same approach as existing code). This works but is brittle if titles duplicate. Recommended follow-up: add stable `id` to tasks and refactor toggle/edit/delete to use `id`.
-- Accessibility: the current implementation uses clickable list rows with keyboard handlers and stops propagation on the input. A more semantic pattern is to wrap checkbox + label in a native `<label>` (or use an input id) so the browser handles activation/focus/announcement natively. This is a small follow-up I can apply if you want.
-- The code uses nullish coalescing (e.g., `(col.tasks ?? [])`) to avoid crashes when arrays are missing.
+- The persistence implementation reads/writes the complete boards structure, which includes nested columns, tasks and subtasks. This keeps the save/load logic simple and predictable for the app's current data shape.
+- The app still identifies tasks by title in several places; persistence does not change that. Consider adding stable `id` fields for boards/columns/tasks as a follow-up to avoid brittle title-matching.
 
-## Checklist
+## Notes about the storage helpers
 
-- [x] Subtasks are checkable (row + checkbox)  
-- [x] Subtask completed count updates in real time  
-- [x] Status dropdown in Task Details updates/moves task to target column  
-- [x] `toggleSubtask` added to `BoardContext`  
-- [x] Column re-sync keeps modal data fresh (or closes modal if task deleted)  
-- [x] Keyboard accessibility (Enter/Space) for subtask rows  
-- [x] TypeScript compiles cleanly (please run `npx tsc --noEmit` locally)  
-- [ ] Add stable `id` to tasks and refactor matching to use id (recommended follow-up)  
-- [ ] Add unit tests for `toggleSubtask` and `editTask` move behavior (optional)  
-- [ ] ESLint passes without warnings (you can run `npm run lint` to confirm)
+- Storage uses the single localStorage key `kanban-data` (see `src/lib/storage.ts`).  
+- The saved JSON follows the `KanbanData` shape and includes `boards` and an optional `selectedBoardName`.  
+- Centralizing storage in `src/lib/storage.ts` makes unit testing load/save behavior straightforward.
 
----
+## Checklist (persistence only)
 
-Merge after review and run the manual tests above. If you want, I can also:
-- Convert everything to stable task `id` matching (safer), or
-- Replace list-row handlers with native label-based patterns for slightly better accessibility.
+- [x] Load boards from `localStorage` if present.
+- [x] Save `boards` to `localStorage` whenever they change.
+- [x] Persist and restore selected board after reload (`kanban.selectedBoard`).
+- [x] `resetToDefault()` clears storage and resets app state.
+- [ ] Add unit tests for storage helpers (recommended).

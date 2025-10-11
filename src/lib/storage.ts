@@ -10,7 +10,7 @@ export function loadData(): KanbanData {
     try {
         const stored = localStorage.getItem(STORAGE_KEY);
         if (stored) {
-            return JSON.parse(stored);
+            return JSON.parse(stored) as KanbanData;
         }
     } catch (error) {
         console.warn('Failed to load data from localStorage:', error);

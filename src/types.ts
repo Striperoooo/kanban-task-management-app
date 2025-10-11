@@ -37,6 +37,7 @@ export interface BoardProps {
 
 export interface KanbanData {
     boards: Board[]
+    selectedBoardName?: string
 }
 
 export interface ConfirmModalProps {

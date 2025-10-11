@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import type { Board, Task } from "../types"
 import data from "../data/data.json"
 
@@ -25,8 +25,39 @@ export function useBoard() {
 }
 
 export function BoardProvider({ children }: { children: ReactNode }) {
-    const [selectedBoard, setSelectedBoard] = useState<Board>(data.boards[0])
-    const [boards, setBoards] = useState<Board[]>(data.boards)
+
+    const STORAGE_KEY = "kanban.boards"
+    const SELECTED_KEY = "kanban.selectedBoard"
+
+    // const [selectedBoard, setSelectedBoard] = useState<Board>(data.boards[0])
+    // const [boards, setBoards] = useState<Board[]>(data.boards)
+
+    const initialBoards = (() => {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY)
+            return raw
+                ? (JSON.parse(raw) as Board[])
+                : data.boards
+        } catch {
+            return data.boards
+        }
+    })()
+
+    const [boards, setBoards] = useState<Board[]>(initialBoards)
+
+    const initialSelectedName = (() => {
+        try {
+            const raw = localStorage.getItem(SELECTED_KEY)
+            if (raw && initialBoards.some(b => b.name === raw)) return raw
+        } catch {
+            // ignore
+        }
+        return initialBoards[0]?.name ?? data.boards[0].name
+    })()
+
+    const [selectedBoard, setSelectedBoard] = useState<Board>(
+        initialBoards.find(b => b.name === initialSelectedName) ?? initialBoards[0] ?? data.boards[0]
+    )
 
     function addBoard(newBoard: Board) {
         setBoards(prev => [...prev, newBoard])
@@ -46,7 +77,7 @@ export function BoardProvider({ children }: { children: ReactNode }) {
     function deleteBoard(boardName: string) {
         setBoards(prev => {
             const filtered = prev.filter(b => b.name !== boardName)
-            setSelectedBoard(filtered[0] || null)
+            setSelectedBoard(filtered[0] ?? data.boards[0])
             return filtered
         })
     }
@@ -151,6 +182,33 @@ export function BoardProvider({ children }: { children: ReactNode }) {
             if (updatedSelected) setSelectedBoard(updatedSelected);
             return updatedBoards;
         })
+    }
+
+    useEffect(() => {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(boards))
+        } catch {
+
+        }
+    }, [boards])
+
+    // save currently selected board name so we can restore it after reload
+    useEffect(() => {
+        try {
+            localStorage.setItem(SELECTED_KEY, selectedBoard.name)
+        } catch {
+            // ignore storage errors
+        }
+    }, [selectedBoard?.name])
+
+    function resetToDefault() {
+        try {
+            localStorage.removeItem(STORAGE_KEY)
+        } catch {
+
+        }
+        setBoards(data.boards)
+        setSelectedBoard(data.boards[0])
     }
 
     function toggleSubtask(columnName: string, taskTitle: string, subtaskIndex: number) {

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import type { Board, Task } from "../types"
+import type { Board, Task, KanbanData } from "../types"
 import data from "../data/data.json"
+import { loadData, saveData, clearData } from "../lib/storage"
 
 type BoardContextType = {
     selectedBoard: Board
@@ -26,41 +27,21 @@ export function useBoard() {
 
 export function BoardProvider({ children }: { children: ReactNode }) {
 
-    const STORAGE_KEY = "kanban.boards"
-    const SELECTED_KEY = "kanban.selectedBoard"
-
-    // const [selectedBoard, setSelectedBoard] = useState<Board>(data.boards[0])
-    // const [boards, setBoards] = useState<Board[]>(data.boards)
-
-    const initialBoards = (() => {
-        try {
-            const raw = localStorage.getItem(STORAGE_KEY)
-            return raw
-                ? (JSON.parse(raw) as Board[])
-                : data.boards
-        } catch {
-            return data.boards
-        }
-    })()
-
-    const [boards, setBoards] = useState<Board[]>(initialBoards)
-
-    const initialSelectedName = (() => {
-        try {
-            const raw = localStorage.getItem(SELECTED_KEY)
-            if (raw && initialBoards.some(b => b.name === raw)) return raw
-        } catch {
-            // ignore
-        }
-        return initialBoards[0]?.name ?? data.boards[0].name
-    })()
-
+    // Load initial data using storage helpers (loadData falls back to data.json)
+    const initialData: KanbanData = loadData()
+    const [boards, setBoards] = useState<Board[]>(initialData.boards ?? data.boards)
+    const initialSelectedName = initialData.selectedBoardName ?? initialData.boards?.[0]?.name ?? data.boards[0].name
     const [selectedBoard, setSelectedBoard] = useState<Board>(
-        initialBoards.find(b => b.name === initialSelectedName) ?? initialBoards[0] ?? data.boards[0]
+        (initialData.boards ?? data.boards).find(b => b.name === initialSelectedName) ?? (initialData.boards ?? data.boards)[0] ?? data.boards[0]
     )
 
     function addBoard(newBoard: Board) {
-        setBoards(prev => [...prev, newBoard])
+        setBoards(prev => {
+            const next = [...prev, newBoard]
+            // persist change
+            try { saveData({ boards: next, selectedBoardName: newBoard.name }) } catch { }
+            return next
+        })
         setSelectedBoard(newBoard)
     }
 
@@ -77,7 +58,9 @@ export function BoardProvider({ children }: { children: ReactNode }) {
     function deleteBoard(boardName: string) {
         setBoards(prev => {
             const filtered = prev.filter(b => b.name !== boardName)
-            setSelectedBoard(filtered[0] ?? data.boards[0])
+            const nextSelected = filtered[0] ?? data.boards[0]
+            try { saveData({ boards: filtered, selectedBoardName: nextSelected.name }) } catch { }
+            setSelectedBoard(nextSelected)
             return filtered
         })
     }
@@ -177,33 +160,25 @@ export function BoardProvider({ children }: { children: ReactNode }) {
                     )
                 }
             })
-
             const updatedSelected = updatedBoards.find(b => b.name === selectedBoard.name);
             if (updatedSelected) setSelectedBoard(updatedSelected);
+            try { saveData({ boards: updatedBoards, selectedBoardName: selectedBoard.name }) } catch { }
             return updatedBoards;
         })
     }
 
+    // Persist boards + selectedBoardName whenever boards or selectedBoard changes
     useEffect(() => {
         try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(boards))
-        } catch {
-
-        }
-    }, [boards])
-
-    // save currently selected board name so we can restore it after reload
-    useEffect(() => {
-        try {
-            localStorage.setItem(SELECTED_KEY, selectedBoard.name)
+            saveData({ boards, selectedBoardName: selectedBoard.name })
         } catch {
             // ignore storage errors
         }
-    }, [selectedBoard?.name])
+    }, [boards, selectedBoard?.name])
 
     function resetToDefault() {
         try {
-            localStorage.removeItem(STORAGE_KEY)
+            clearData()
         } catch {
 
         }

@@ -5,6 +5,7 @@ import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import TaskDetailsModal from './TaskDetailsModal'
 import TaskFormModal from "./TaskFormModal";
 import ConfirmModal from './ConfirmModal'
+import { useDroppable } from '@dnd-kit/core'
 import { useBoard } from "../contexts/BoardContext";
 
 export default function Column({ column }: ColumnProps) {
@@ -37,8 +38,10 @@ export default function Column({ column }: ColumnProps) {
         }
     }, [selectedBoard]);
 
+    const { setNodeRef } = useDroppable({ id: column.id ?? column.name })
+
     return (
-        <div className="column-container h-full flex flex-col">
+        <div ref={setNodeRef} className="column-container h-full flex flex-col">
             <h2 className="column-name mb-6 font-bold text-medium-grey text-xs tracking-[2.4px]">
                 <span className="column-color text-green-600 mr-1">
                     O
@@ -67,8 +70,8 @@ export default function Column({ column }: ColumnProps) {
                     task={selectedTask}
                     onClose={() => setSelectedTask(null)}
                     onEdit={() => {
-                        // ensure the taskToEdit has the correct original column name
-                        setTaskToEdit({ ...selectedTask, status: column.name })
+                        // ensure the taskToEdit has the correct original column id
+                        setTaskToEdit({ ...selectedTask, status: column.id })
                         setEditModalOpen(true)
                         setSelectedTask(null)
                     }}
@@ -98,7 +101,7 @@ export default function Column({ column }: ColumnProps) {
                     message={`Are you sure you want to delete the '${taskToDelete.title}' task and its subtask? This action cannot be reversed.`}
                     danger
                     onConfirm={() => {
-                        deleteTask(column.name, taskToDelete.title)
+                        deleteTask(column.id ?? column.name, taskToDelete.id ?? taskToDelete.title)
                         setDeleteModalOpen(false)
                         setTaskToDelete(null)
                     }}

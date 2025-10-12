@@ -14,7 +14,7 @@ type BoardContextType = {
     addTask: (columnId: string, newtask: Task) => void
     editTask: (originalColumnId: string, updatedTask: Task, originalTaskId: string) => void
     deleteTask: (columnId: string, taskId: string) => void
-    moveTask: (columnId: string, taskId: string, toIndex: number) => void
+    moveTask: (fromColumnId: string, toColumnId: string, taskId: string, toIndex: number, persist?: boolean) => void
     toggleSubtask: (columnId: string, taskId: string, subtaskIndex: number) => void
     resetToDefault: () => void
 
@@ -205,17 +205,29 @@ export function BoardProvider({ children }: { children: ReactNode }) {
         })
     }
 
-    function moveTask(columnId: string, taskId: string, toIndex: number) {
+    function moveTask(fromColumnId: string, toColumnId: string, taskId: string, toIndex: number, persist: boolean = true) {
         setBoards(prev => {
             const copy = prev.map(b => ({ ...b, columns: b.columns ? b.columns.map(c => ({ ...c, tasks: c.tasks ? [...c.tasks] : [] })) : [] }))
             const board = copy.find(b => b.id === selectedBoardId)!
-            const column = board.columns!.find(c => c.id === columnId)!
-            const fromIndex = column.tasks!.findIndex(t => t.id === taskId)
+            const fromColumn = board.columns!.find(c => c.id === fromColumnId)!
+            const toColumn = board.columns!.find(c => c.id === toColumnId)!
+            const fromIndex = fromColumn.tasks!.findIndex(t => t.id === taskId)
             if (fromIndex === -1) return prev
-            const [moved] = column.tasks!.splice(fromIndex, 1)
-            column.tasks!.splice(toIndex, 0, moved)
-            // persist
-            saveData({ boards: copy, selectedBoardId })
+            const [moved] = fromColumn.tasks!.splice(fromIndex, 1)
+
+            // if moving within same column, adjust insertion index based on removal index
+            if (fromColumnId === toColumnId) {
+                const insertIndex = toIndex
+                fromColumn.tasks!.splice(insertIndex, 0, moved)
+            } else {
+                toColumn.tasks!.splice(toIndex, 0, moved)
+            }
+
+            // persist only when requested
+            if (persist) {
+                try { saveData({ boards: copy, selectedBoardId }) } catch { }
+            }
+
             const updatedSelected = copy.find(b => b.id === selectedBoardId);
             if (updatedSelected) setSelectedBoard(updatedSelected);
             return copy

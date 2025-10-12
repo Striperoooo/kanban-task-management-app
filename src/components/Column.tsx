@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import type { ColumnProps, Task } from "../types";
 import TaskCard from './TaskCard';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import TaskDetailsModal from './TaskDetailsModal'
 import TaskFormModal from "./TaskFormModal";
 import ConfirmModal from './ConfirmModal'
@@ -48,13 +49,18 @@ export default function Column({ column }: ColumnProps) {
                 </span>
             </h2>
 
-            {(column.tasks ?? []).map(task => (
-                <TaskCard
-                    key={task.title}
-                    task={task}
-                    onClick={() => setSelectedTask({ ...task, status: column.name })}
-                />
-            ))}
+            <SortableContext
+                items={(column.tasks ?? []).map(t => t.title)}
+                strategy={verticalListSortingStrategy}
+            >
+                {(column.tasks ?? []).map(task => (
+                    <TaskCard
+                        key={task.title}
+                        task={task}
+                        onClick={() => setSelectedTask({ ...task, status: column.name })}
+                    />
+                ))}
+            </SortableContext>
 
             {selectedTask && !editModalOpen && (
                 <TaskDetailsModal

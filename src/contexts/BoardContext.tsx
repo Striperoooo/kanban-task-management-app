@@ -14,6 +14,7 @@ type BoardContextType = {
     addTask: (columnName: string, newtask: Task) => void
     editTask: (columnName: string, updatedTask: Task, originalTitle: string) => void
     deleteTask: (columnName: string, title: string) => void
+    moveTask: (columnName: string, taskTitle: string, toIndex: number) => void
     toggleSubtask: (columnName: string, taskTitle: string, subtaskIndex: number) => void
 
 }
@@ -187,6 +188,21 @@ export function BoardProvider({ children }: { children: ReactNode }) {
         })
     }
 
+    function moveTask(columnName: string, taskTitle: string, toIndex: number) {
+        setBoards(prev => {
+            const copy = prev.map(b => ({ ...b, columns: b.columns ? b.columns.map(c => ({ ...c, tasks: c.tasks ? [...c.tasks] : [] })) : [] }))
+            const board = copy.find(b => b.name === selectedBoard.name)!
+            const column = board.columns!.find(c => c.name === columnName)!
+            const fromIndex = column.tasks!.findIndex(t => t.title === taskTitle)
+            if (fromIndex === -1) return prev
+            const [moved] = column.tasks!.splice(fromIndex, 1)
+            column.tasks!.splice(toIndex, 0, moved)
+            // persist
+            saveData({ boards: copy, selectedBoardId })
+            return copy
+        })
+    }
+
     // Persist boards + selectedBoardName whenever boards or selectedBoard changes
     useEffect(() => {
         try {
@@ -251,8 +267,10 @@ export function BoardProvider({ children }: { children: ReactNode }) {
                 addTask,
                 editTask
                 ,
-                deleteTask,
-                toggleSubtask
+                    deleteTask,
+                    toggleSubtask,
+                    moveTask,
+                    resetToDefault
             }}
         >
             {children}

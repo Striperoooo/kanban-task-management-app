@@ -1,67 +1,81 @@
 ## What
 
-Day 11 — Persistence (localStorage)
+Day 13 — Stable IDs & Drag-and-Drop
 
-Implemented loading boards from `localStorage` (if present) on app start and saving the full boards structure to `localStorage` whenever boards change. Also persisted the currently selected board so the app restores the last-open board after a reload, and added a `resetToDefault()` helper to clear storage and reset to the original seed data (dev helper).
+This pull request introduces stable `id` fields for boards, columns, and tasks across the app and implements drag-and-drop task reordering (within and across columns) using `@dnd-kit`. The refactor replaces fragile name/title-based lookups with id-based operations and updates the context API and UI components to operate on IDs. Drag-and-drop uses optimistic UI updates during drag and persists changes on drop.
 
-## Changes (persistence only)
+## Key outcomes
 
-- ✅ Load on start: read saved boards from `localStorage` under key `kanban.boards`; fall back to `data.json` if no saved data or parsing errors.
-- ✅ Save on change: write the full `boards` object to `localStorage` whenever `boards` state changes.
-- ✅ Restore selection: save the active board name under `kanban.selectedBoard` and restore that selection on startup (so refresh returns to the board you were on).
-- ✅ Reset helper: `resetToDefault()` clears `kanban.boards` (and resets in-memory state to the seed data) so you can quickly return to the original dataset.
+- Stable ids for boards, columns, and tasks everywhere in the runtime data (seed data updated and runtime normalization added).
+- Cross-column and within-column drag-and-drop using `@dnd-kit/core` and `@dnd-kit/sortable`.
+- Context API refactor: core mutators (`addTask`, `editTask`, `deleteTask`, `moveTask`, `toggleSubtask`) accept and use IDs for lookups and updates.
+- Drag handle on `TaskCard` to separate click (open details) from drag interactions and improve accessibility.
 
-Note: The implementation was then refactored to use the new storage helpers in `src/lib/storage.ts` which use a single key (`kanban-data`) to store a `KanbanData` object. That object contains both `boards` and `selectedBoardName`. The provider now calls `loadData()` on startup and `saveData()` whenever `boards` or the selected board changes; `resetToDefault()` calls `clearData()`.
+## Drag-and-drop functionality
 
-## How to Test (persistence)
+* Integrated `@dnd-kit/core` and `@dnd-kit/sortable` and implemented DnD handlers in `src/components/BoardView.tsx`. Tasks can be reordered within a column and moved across columns. Dragging uses optimistic (in-memory) updates on drag-over to keep the UI smooth and persists the final state on drop.
+* `src/components/Column.tsx` and `src/components/TaskCard.tsx` were updated to use `SortableContext`, `useDroppable`, and `useSortable`, enabling draggable tasks and droppable columns (including empty columns).
 
-1. Checkout branch:
-	```bash
-	git checkout feat/persistence-localstorage
-	```
-2. Install and run:
-	```bash
-	npm install
-	npm run dev
-	```
-3. Open the app and verify initial load:
-	- On first run (or after clearing storage) the app should load the seed data from `data.json`.
-4. Make a change and verify save:
-	- Add/edit/delete a task or toggle a subtask, then refresh the page. The change should persist.
-5. Verify selected-board restore:
-	- Switch to a different board (e.g. Board 4), refresh the page, and confirm the same board is selected after reload.
-6. Reset to default:
-	- Call `resetToDefault()` (temporarily expose it from the provider value or run `localStorage.removeItem('kanban-data')` in the console) and confirm the app returns to the seed data on reload.
-7. Optional: run TypeScript check locally:
-	```bash
-	npx tsc --noEmit
-	```
+## Stable ID refactor
 
-## Files Changed (persistence)
+* Ensured every board, column, and task has a stable `id`. Seed data was updated and runtime normalization guarantees ids when loading older data. All lookups, keys, and mutations were migrated to use these ids instead of names/titles.
+* Updated task creation/editing flows to generate and preserve ids for tasks so subsequent operations (move/edit/delete) are reliable.
 
-- `src/contexts/BoardContext.tsx` — added localStorage load/save for `boards` and `kanban.selectedBoard`, added `resetToDefault()` helper, and initialized state from stored data when present.
- - `src/contexts/BoardContext.tsx` — now uses `loadData()`/`saveData()` from `src/lib/storage.ts`, initializes state from stored data, and calls `saveData()` when `boards` or the selected board changes. `resetToDefault()` calls `clearData()`.
- - `src/lib/storage.ts` — new storage utilities `loadData()`, `saveData()`, and `clearData()` that read/write a single `kanban-data` key in localStorage containing `{ boards, selectedBoardName }`.
- - `src/types.ts` — extended `KanbanData` type to include `selectedBoardName`.
- - `PR_desc.md` — this PR description file.
+## Context & API improvements
 
-If you added a separate storage utility module (e.g. `src/lib/storage.ts`) include that file in the PR as well.
+* `src/contexts/BoardContext.tsx` was refactored: methods operate on ids for clarity and reliability. A new `moveTask` method supports the DnD handlers and handles both intra-column reordering and cross-column moves. Persistence to storage (existing helper) occurs on confirmed drops.
+
+## UI & usability enhancements
+
+* Status selects and forms now use column ids as values and show human-friendly column names as labels, preventing accidental status mismatches.
+* Added a visible drag handle to `TaskCard` to avoid click-vs-drag conflicts: clicking the card body still opens the details modal while dragging is started from the handle.
+
+## Files changed (high level)
+
+- `src/contexts/BoardContext.tsx` — ensure stable ids on load, refactor mutators to use ids, add `moveTask` with optional optimistic behavior.
+- `src/components/BoardView.tsx` — DnD wiring (DndContext handlers, drag-over and drop logic).
+- `src/components/Column.tsx` — droppable column container and `SortableContext` for tasks.
+- `src/components/TaskCard.tsx` — `useSortable` integration and drag handle.
+- `src/components/TaskFormModal.tsx` / `src/components/TaskDetailsModal.tsx` — status dropdowns and id-aware save/edit flows.
+- `src/types.ts` — types updated to include `id` fields where needed.
+- `src/data/data.json` — seed data updated with deterministic ids.
+- `src/lib/storage.ts` — unchanged API but consumption updated to store id-based data (no breaking change).
+
+## How to test (quick)
+
+1. Install and run dev server:
+
+```powershell
+npm install
+npm run dev
+```
+
+2. Basic manual checks:
+
+- Open the app and verify boards load correctly (seed or persisted data).
+- Drag a task within the same column — the order should update and persist after refresh.
+- Drag a task to a different column — it should move, and the change should persist after refresh.
+- Try dragging to an empty column — dropping into an empty column should work.
+- Click a task card (not the drag handle) to open the details modal; use the drag handle to start dragging.
+
+3. Optional typecheck before committing:
+
+```powershell
+npx tsc --noEmit
+```
 
 ## Notes
 
-- The persistence implementation reads/writes the complete boards structure, which includes nested columns, tasks and subtasks. This keeps the save/load logic simple and predictable for the app's current data shape.
-- The app still identifies tasks by title in several places; persistence does not change that. Consider adding stable `id` fields for boards/columns/tasks as a follow-up to avoid brittle title-matching.
+- DragOverlay (a smooth drag preview) is a recommended follow-up for further UX polish but is not required for this PR.
+- The runtime includes guards to handle older data that may not have ids yet; newly-created items receive stable ids.
 
-## Notes about the storage helpers
+## Checklist
 
-- Storage uses the single localStorage key `kanban-data` (see `src/lib/storage.ts`).  
-- The saved JSON follows the `KanbanData` shape and includes `boards` and an optional `selectedBoardName`.  
-- Centralizing storage in `src/lib/storage.ts` makes unit testing load/save behavior straightforward.
+- [x] Add stable `id` fields for boards, columns, and tasks (seed + runtime normalization).
+- [x] Migrate context and components to use ids for lookups and keys.
+- [x] Integrate `@dnd-kit` for drag-and-drop and implement `moveTask`.
+- [x] Add drag handle to `TaskCard` to separate click vs drag.
+- [x] Ensure droppable empty columns and optimistic drag-over behavior; persist on drop.
+- [ ] Add DragOverlay for an improved drag preview (follow-up).
 
-## Checklist (persistence only)
-
-- [x] Load boards from `localStorage` if present.
-- [x] Save `boards` to `localStorage` whenever they change.
-- [x] Persist and restore selected board after reload (`kanban.selectedBoard`).
-- [x] `resetToDefault()` clears storage and resets app state.
-- [ ] Add unit tests for storage helpers (recommended).
+````

@@ -11,11 +11,12 @@ type BoardContextType = {
     addBoard: (board: Board) => void
     updateBoard: (board: Board) => void
     deleteBoard: (boardName: string) => void
-    addTask: (columnName: string, newtask: Task) => void
-    editTask: (columnName: string, updatedTask: Task, originalTitle: string) => void
-    deleteTask: (columnName: string, title: string) => void
-    moveTask: (columnName: string, taskTitle: string, toIndex: number) => void
-    toggleSubtask: (columnName: string, taskTitle: string, subtaskIndex: number) => void
+    addTask: (columnId: string, newtask: Task) => void
+    editTask: (originalColumnId: string, updatedTask: Task, originalTaskId: string) => void
+    deleteTask: (columnId: string, taskId: string) => void
+    moveTask: (columnId: string, taskId: string, toIndex: number) => void
+    toggleSubtask: (columnId: string, taskId: string, subtaskIndex: number) => void
+    resetToDefault: () => void
 
 }
 
@@ -33,11 +34,29 @@ export function BoardProvider({ children }: { children: ReactNode }) {
     const initialData: KanbanData = loadData()
 
     // Ensure every board has an id. If an id is missing, generate one using a simple prefix + index.
-    function ensureBoardIds(inputBoards: Board[]) {
-        return inputBoards.map((b, i) => ({ id: b.id ?? `board-${i}`, ...b }))
+    // Ensure boards, columns and tasks have stable ids and normalize task.status to column ids when possible
+    function ensureIds(inputBoards: Board[]) {
+        return inputBoards.map((b, bi) => {
+            const boardId = b.id ?? `board-${bi}`
+            const columns = (b.columns ?? []).map((c, ci) => {
+                const colId = c.id ?? `${boardId}-col-${ci}`
+                const tasks = (c.tasks ?? []).map((t, ti) => {
+                    const taskId = t.id ?? `${colId}-task-${ti}`
+                    // normalize status: if status matches a column name, replace with the column id
+                    const status = (() => {
+                        if (!t.status) return colId
+                        const matched = (b.columns ?? []).find(x => x.name === t.status)
+                        return matched ? (matched.id ?? `${boardId}-col-${(b.columns ?? []).indexOf(matched)}`) : t.status
+                    })()
+                    return { id: taskId, ...t, status }
+                })
+                return { id: colId, ...c, tasks }
+            })
+            return { id: boardId, ...b, columns }
+        })
     }
 
-    const seeded = ensureBoardIds(initialData.boards ?? data.boards)
+    const seeded = ensureIds(initialData.boards ?? data.boards)
 
     const [boards, setBoards] = useState<Board[]>(seeded)
 
@@ -85,15 +104,15 @@ export function BoardProvider({ children }: { children: ReactNode }) {
         })
     }
 
-    function addTask(columnName: string, newtask: Task) {
+    function addTask(columnId: string, newtask: Task) {
         setBoards(prevBoards => {
             const updatedBoards = prevBoards.map(board =>
                 board.id === selectedBoardId
                     ? {
                         ...board,
                         columns: (board.columns ?? []).map(col =>
-                            col.name === columnName
-                                ? { ...col, tasks: [...(col.tasks ?? []), newtask] }
+                            col.id === columnId
+                                ? { ...col, tasks: [...(col.tasks ?? []), { id: newtask.id ?? `task-${Date.now()}`, ...newtask }] }
                                 : col
                         )
                     }
@@ -111,27 +130,25 @@ export function BoardProvider({ children }: { children: ReactNode }) {
     }
 
     function editTask(
-        columnName: string,
+        originalColumnId: string,
         updatedTask: Task,
-        originalTitle: string
+        originalTaskId: string
     ) {
         setBoards(prevBoards => {
             const updatedBoards = prevBoards.map(board => {
                 if (board.id !== selectedBoardId) return board;
-
-                const originalColumnName = columnName;
-                const targetColumnName = updatedTask.status;
+                const targetColumnId = updatedTask.status;
 
                 // If column didn't change, replace the task in-place
-                if (originalColumnName === targetColumnName) {
+                if (originalColumnId === targetColumnId) {
                     return {
                         ...board,
                         columns: (board.columns ?? []).map(col =>
-                            col.name === originalColumnName
+                            col.id === originalColumnId
                                 ? {
                                     ...col,
                                     tasks: (col.tasks ?? []).map(task =>
-                                        task.title === originalTitle ? { ...updatedTask } : task
+                                        task.id === originalTaskId ? { ...task, ...updatedTask } : task
                                     )
                                 }
                                 : col
@@ -143,17 +160,17 @@ export function BoardProvider({ children }: { children: ReactNode }) {
                 return {
                     ...board,
                     columns: (board.columns ?? []).map(col => {
-                        if (col.name === originalColumnName) {
+                        if (col.id === originalColumnId) {
                             return {
                                 ...col,
-                                tasks: (col.tasks ?? []).filter(task => task.title !== originalTitle)
+                                tasks: (col.tasks ?? []).filter(task => task.id !== originalTaskId)
                             };
                         }
 
-                        if (col.name === targetColumnName) {
+                        if (col.id === targetColumnId) {
                             return {
                                 ...col,
-                                tasks: [...(col.tasks ?? []), updatedTask]
+                                tasks: [...(col.tasks ?? []), { id: updatedTask.id ?? originalTaskId, ...updatedTask }]
                             };
                         }
 
@@ -167,7 +184,7 @@ export function BoardProvider({ children }: { children: ReactNode }) {
         });
     }
 
-    function deleteTask(columnName: string, title: string) {
+    function deleteTask(columnId: string, taskId: string) {
         setBoards(prevBoards => {
             const updatedBoards = prevBoards.map(board => {
                 if (board.id !== selectedBoardId) return board;
@@ -175,8 +192,8 @@ export function BoardProvider({ children }: { children: ReactNode }) {
                 return {
                     ...board,
                     columns: (board.columns ?? []).map(col =>
-                        col.name === columnName
-                            ? { ...col, tasks: (col.tasks ?? []).filter(t => t.title !== title) }
+                        col.id === columnId
+                            ? { ...col, tasks: (col.tasks ?? []).filter(t => t.id !== taskId) }
                             : col
                     )
                 }
@@ -188,17 +205,19 @@ export function BoardProvider({ children }: { children: ReactNode }) {
         })
     }
 
-    function moveTask(columnName: string, taskTitle: string, toIndex: number) {
+    function moveTask(columnId: string, taskId: string, toIndex: number) {
         setBoards(prev => {
             const copy = prev.map(b => ({ ...b, columns: b.columns ? b.columns.map(c => ({ ...c, tasks: c.tasks ? [...c.tasks] : [] })) : [] }))
-            const board = copy.find(b => b.name === selectedBoard.name)!
-            const column = board.columns!.find(c => c.name === columnName)!
-            const fromIndex = column.tasks!.findIndex(t => t.title === taskTitle)
+            const board = copy.find(b => b.id === selectedBoardId)!
+            const column = board.columns!.find(c => c.id === columnId)!
+            const fromIndex = column.tasks!.findIndex(t => t.id === taskId)
             if (fromIndex === -1) return prev
             const [moved] = column.tasks!.splice(fromIndex, 1)
             column.tasks!.splice(toIndex, 0, moved)
             // persist
             saveData({ boards: copy, selectedBoardId })
+            const updatedSelected = copy.find(b => b.id === selectedBoardId);
+            if (updatedSelected) setSelectedBoard(updatedSelected);
             return copy
         })
     }
@@ -218,12 +237,12 @@ export function BoardProvider({ children }: { children: ReactNode }) {
         } catch {
 
         }
-        const reset = ensureBoardIds(data.boards)
+        const reset = ensureIds(data.boards)
         setBoards(reset)
         setSelectedBoard(reset[0])
     }
 
-    function toggleSubtask(columnName: string, taskTitle: string, subtaskIndex: number) {
+    function toggleSubtask(columnId: string, taskId: string, subtaskIndex: number) {
         setBoards(prevBoards => {
             const updatedBoards = prevBoards.map(board => {
                 if (board.id !== selectedBoardId) return board;
@@ -231,12 +250,12 @@ export function BoardProvider({ children }: { children: ReactNode }) {
                 return {
                     ...board,
                     columns: (board.columns ?? []).map(col => {
-                        if (col.name !== columnName) return col;
+                        if (col.id !== columnId) return col;
 
                         return {
                             ...col,
                             tasks: (col.tasks ?? []).map(task => {
-                                if (task.title !== taskTitle) return task;
+                                if (task.id !== taskId) return task;
 
                                 const newSubtasks = (task.subtasks ?? []).map((st, i) =>
                                     i === subtaskIndex ? { ...st, isCompleted: !st.isCompleted } : st
@@ -251,6 +270,7 @@ export function BoardProvider({ children }: { children: ReactNode }) {
 
             const updatedSelected = updatedBoards.find(b => b.id === selectedBoardId);
             if (updatedSelected) setSelectedBoard(updatedSelected);
+            try { saveData({ boards: updatedBoards, selectedBoardId }) } catch { }
             return updatedBoards;
         });
     }
@@ -267,10 +287,10 @@ export function BoardProvider({ children }: { children: ReactNode }) {
                 addTask,
                 editTask
                 ,
-                    deleteTask,
-                    toggleSubtask,
-                    moveTask,
-                    resetToDefault
+                deleteTask,
+                toggleSubtask,
+                moveTask,
+                resetToDefault
             }}
         >
             {children}

@@ -20,12 +20,12 @@ export default function Column({ column }: ColumnProps) {
     useEffect(() => {
         if (!selectedTask) return;
 
-        // find latest task by title across columns
+        // find latest task by id across columns
         let latest: Task | null = null;
         for (const col of (selectedBoard.columns ?? [])) {
-            const found = (col.tasks ?? []).find(t => t.title === selectedTask.title);
+            const found = (col.tasks ?? []).find(t => t.id === selectedTask.id);
             if (found) {
-                latest = { ...found, status: col.name };
+                latest = { ...found, status: col.id };
                 break;
             }
         }
@@ -50,14 +50,14 @@ export default function Column({ column }: ColumnProps) {
             </h2>
 
             <SortableContext
-                items={(column.tasks ?? []).map(t => t.title)}
+                items={(column.tasks ?? []).map(t => t.id ?? t.title)}
                 strategy={verticalListSortingStrategy}
             >
                 {(column.tasks ?? []).map(task => (
                     <TaskCard
-                        key={task.title}
+                        key={task.id ?? task.title}
                         task={task}
-                        onClick={() => setSelectedTask({ ...task, status: column.name })}
+                        onClick={() => setSelectedTask({ ...task, status: column.id })}
                     />
                 ))}
             </SortableContext>

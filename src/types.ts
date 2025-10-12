@@ -6,6 +6,7 @@ export interface Subtask {
 }
 
 export interface Task {
+    id?: string
     title: string
     description: string
     status: string
@@ -18,6 +19,7 @@ export interface TaskProps {
 }
 
 export interface Column {
+    id?: string
     name: string
     tasks?: Task[]
 }

@@ -20,11 +20,12 @@ export default function TaskDetailsModal({
     const completed = (task.subtasks ?? []).filter(st => st.isCompleted).length;
     const total = (task.subtasks ?? []).length;
 
-    const statusOptions = (selectedBoard.columns ?? []).map(col => col.name);
-    const [status, setStatus] = useState<string>(task.status ?? (statusOptions[0] ?? ""));
+    // statusOptions are column ids with labels
+    const statusOptions = (selectedBoard.columns ?? []).map(col => ({ id: col.id ?? col.name, name: col.name }))
+    const [status, setStatus] = useState<string>(task.status ?? (statusOptions[0]?.id ?? ""));
 
     function handleToggleSubtask(index: number) {
-        toggleSubtask(task.status, task.title, index);
+        toggleSubtask(task.status, task.id ?? task.title, index);
     }
 
     function handleStatusChange(e: React.ChangeEvent<HTMLSelectElement>) {
@@ -32,7 +33,7 @@ export default function TaskDetailsModal({
         setStatus(newStatus);
 
         const updatedTask: Task = { ...task, status: newStatus };
-        editTask(task.status, updatedTask, task.title);
+        editTask(task.status, updatedTask, task.id ?? task.title);
     }
 
     return (
@@ -62,8 +63,8 @@ export default function TaskDetailsModal({
 
                 <ul className="mb-4">
                     {(task.subtasks ?? []).map((sub, i) => {
-                        // prefer a stable id here (task.id + i) when you add task ids
-                        const inputId = `subtask-${(task.title || 'task').replace(/\s+/g, '-').toLowerCase()}-${i}`;
+                        // prefer a stable id here (task.id + i)
+                        const inputId = `subtask-${(task.id ?? (task.title || 'task')).replace(/\s+/g, '-').toLowerCase()}-${i}`;
 
                         return (
                             <li key={inputId} className="mb-2">
@@ -95,7 +96,7 @@ export default function TaskDetailsModal({
                 >
                     <option value="" disabled>Select status</option>
                     {statusOptions.map(opt => (
-                        <option key={opt} value={opt}>{opt}</option>
+                        <option key={opt.id} value={opt.id}>{opt.name}</option>
                     ))}
                 </select>
             </div>

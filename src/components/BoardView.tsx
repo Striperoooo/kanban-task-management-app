@@ -16,28 +16,26 @@ export default function BoardView() {
 
         if (activeId === overId) return
 
-        // ids are task titles in this minimal scaffold; we need to find their column
-        let fromColumn: string | null = null
-        let toColumn: string | null = null
+        // find source and target columns by task id
+        let fromColumnId: string | null = null
+        let toColumnId: string | null = null
         let toIndex = -1
 
         for (const col of (selectedBoard.columns ?? [])) {
-            const idxA = (col.tasks ?? []).findIndex(t => t.title === activeId)
-            const idxB = (col.tasks ?? []).findIndex(t => t.title === overId)
-            if (idxA > -1) {
-                fromColumn = col.name
-            }
+            const idxA = (col.tasks ?? []).findIndex(t => (t.id ?? t.title) === activeId)
+            const idxB = (col.tasks ?? []).findIndex(t => (t.id ?? t.title) === overId)
+            if (idxA > -1) fromColumnId = col.id ?? col.name
             if (idxB > -1) {
-                toColumn = col.name
+                toColumnId = col.id ?? col.name
                 toIndex = idxB
             }
         }
 
-        if (!fromColumn || !toColumn) return
+        if (!fromColumnId || !toColumnId) return
 
         // Only support reorder within same column for now
-        if (fromColumn === toColumn) {
-            moveTask(fromColumn, activeId, toIndex)
+        if (fromColumnId === toColumnId) {
+            moveTask(fromColumnId, activeId, toIndex)
         }
     }
 

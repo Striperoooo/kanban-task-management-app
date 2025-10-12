@@ -6,8 +6,9 @@ export default function TaskCard({ task, onClick }: TaskProps) {
     const completed = task.subtasks.filter(st => st.isCompleted).length
     const total = task.subtasks.length
 
-    // use task.title as the draggable id for this minimal scaffold
-    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: task.title })
+    // use task.id as the draggable id; fall back to title for older data
+    const draggableId = task.id ?? task.title
+    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: draggableId })
 
     const style = {
         transform: CSS.Transform.toString(transform),

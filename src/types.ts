@@ -27,6 +27,7 @@ export interface ColumnProps {
 }
 
 export interface Board {
+    id?: string
     name: string
     columns?: Column[]
 }
@@ -37,7 +38,7 @@ export interface BoardProps {
 
 export interface KanbanData {
     boards: Board[]
-    selectedBoardName?: string
+    selectedBoardId?: string
 }
 
 export interface ConfirmModalProps {

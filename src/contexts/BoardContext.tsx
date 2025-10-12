@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
+import type { ReactNode } from "react";
 import type { Board, Task, KanbanData } from "../types"
 import data from "../data/data.json"
 import { loadData, saveData, clearData } from "../lib/storage"
@@ -29,26 +30,44 @@ export function BoardProvider({ children }: { children: ReactNode }) {
 
     // Load initial data using storage helpers (loadData falls back to data.json)
     const initialData: KanbanData = loadData()
-    const [boards, setBoards] = useState<Board[]>(initialData.boards ?? data.boards)
-    const initialSelectedName = initialData.selectedBoardName ?? initialData.boards?.[0]?.name ?? data.boards[0].name
-    const [selectedBoard, setSelectedBoard] = useState<Board>(
-        (initialData.boards ?? data.boards).find(b => b.name === initialSelectedName) ?? (initialData.boards ?? data.boards)[0] ?? data.boards[0]
-    )
+
+    // Ensure every board has an id. If an id is missing, generate one using a simple prefix + index.
+    function ensureBoardIds(inputBoards: Board[]) {
+        return inputBoards.map((b, i) => ({ id: b.id ?? `board-${i}`, ...b }))
+    }
+
+    const seeded = ensureBoardIds(initialData.boards ?? data.boards)
+
+    const [boards, setBoards] = useState<Board[]>(seeded)
+
+    const initialSelectedId = initialData.selectedBoardId ?? seeded[0]?.id ?? seeded[0]?.name ?? data.boards[0].name
+    const [selectedBoardId, setSelectedBoardId] = useState<string>(initialSelectedId)
+
+    // wrapper: accept a Board object (old API) and set the selectedBoardId
+    function setSelectedBoard(board: Board) {
+        if (!board || !board.id) return
+        setSelectedBoardId(board.id)
+    }
+
+    // derive the selected board object from boards and the selected id
+    const selectedBoard = boards.find(b => b.id === selectedBoardId) ?? boards[0]
 
     function addBoard(newBoard: Board) {
+        const boardWithId = { id: newBoard.id ?? `board-${Date.now()}`, ...newBoard }
         setBoards(prev => {
-            const next = [...prev, newBoard]
+            const next = [...prev, boardWithId]
             // persist change
-            try { saveData({ boards: next, selectedBoardName: newBoard.name }) } catch { }
+            try { saveData({ boards: next, selectedBoardId: boardWithId.id }) } catch { }
             return next
         })
-        setSelectedBoard(newBoard)
+        setSelectedBoard(boardWithId)
     }
 
     function updateBoard(updatedBoard: Board) {
         setBoards(prevBoards =>
             prevBoards.map(b =>
-                b.name === updatedBoard.originalName
+                // allow older callers that passed originalName; fall back to id if provided
+                b.name === (updatedBoard as any).originalName
                     ? { ...updatedBoard, name: updatedBoard.name }
                     : b
             )
@@ -59,7 +78,7 @@ export function BoardProvider({ children }: { children: ReactNode }) {
         setBoards(prev => {
             const filtered = prev.filter(b => b.name !== boardName)
             const nextSelected = filtered[0] ?? data.boards[0]
-            try { saveData({ boards: filtered, selectedBoardName: nextSelected.name }) } catch { }
+            try { saveData({ boards: filtered, selectedBoardId: nextSelected.id ?? `board-0` }) } catch { }
             setSelectedBoard(nextSelected)
             return filtered
         })
@@ -68,10 +87,10 @@ export function BoardProvider({ children }: { children: ReactNode }) {
     function addTask(columnName: string, newtask: Task) {
         setBoards(prevBoards => {
             const updatedBoards = prevBoards.map(board =>
-                board.name === selectedBoard.name
+                board.id === selectedBoardId
                     ? {
                         ...board,
-                        columns: board.columns.map(col =>
+                        columns: (board.columns ?? []).map(col =>
                             col.name === columnName
                                 ? { ...col, tasks: [...(col.tasks ?? []), newtask] }
                                 : col
@@ -80,10 +99,11 @@ export function BoardProvider({ children }: { children: ReactNode }) {
                     : board
             )
 
-            const updatedSelected = updatedBoards.find(b => b.name === selectedBoard.name);
+            const updatedSelected = updatedBoards.find(b => b.id === selectedBoardId);
             if (updatedSelected) {
                 setSelectedBoard(updatedSelected)
             };
+            try { saveData({ boards: updatedBoards, selectedBoardId }) } catch { }
             return updatedBoards;
 
         })
@@ -96,7 +116,7 @@ export function BoardProvider({ children }: { children: ReactNode }) {
     ) {
         setBoards(prevBoards => {
             const updatedBoards = prevBoards.map(board => {
-                if (board.name !== selectedBoard.name) return board;
+                if (board.id !== selectedBoardId) return board;
 
                 const originalColumnName = columnName;
                 const targetColumnName = updatedTask.status;
@@ -140,7 +160,7 @@ export function BoardProvider({ children }: { children: ReactNode }) {
                     })
                 };
             });
-            const updatedSelected = updatedBoards.find(b => b.name === selectedBoard.name);
+            const updatedSelected = updatedBoards.find(b => b.id === selectedBoardId);
             if (updatedSelected) setSelectedBoard(updatedSelected);
             return updatedBoards;
         });
@@ -149,7 +169,7 @@ export function BoardProvider({ children }: { children: ReactNode }) {
     function deleteTask(columnName: string, title: string) {
         setBoards(prevBoards => {
             const updatedBoards = prevBoards.map(board => {
-                if (board.name !== selectedBoard.name) return board;
+                if (board.id !== selectedBoardId) return board;
 
                 return {
                     ...board,
@@ -160,9 +180,9 @@ export function BoardProvider({ children }: { children: ReactNode }) {
                     )
                 }
             })
-            const updatedSelected = updatedBoards.find(b => b.name === selectedBoard.name);
+            const updatedSelected = updatedBoards.find(b => b.id === selectedBoardId);
             if (updatedSelected) setSelectedBoard(updatedSelected);
-            try { saveData({ boards: updatedBoards, selectedBoardName: selectedBoard.name }) } catch { }
+            try { saveData({ boards: updatedBoards, selectedBoardId }) } catch { }
             return updatedBoards;
         })
     }
@@ -170,11 +190,11 @@ export function BoardProvider({ children }: { children: ReactNode }) {
     // Persist boards + selectedBoardName whenever boards or selectedBoard changes
     useEffect(() => {
         try {
-            saveData({ boards, selectedBoardName: selectedBoard.name })
+            saveData({ boards, selectedBoardId })
         } catch {
             // ignore storage errors
         }
-    }, [boards, selectedBoard?.name])
+    }, [boards, selectedBoardId])
 
     function resetToDefault() {
         try {
@@ -182,14 +202,15 @@ export function BoardProvider({ children }: { children: ReactNode }) {
         } catch {
 
         }
-        setBoards(data.boards)
-        setSelectedBoard(data.boards[0])
+        const reset = ensureBoardIds(data.boards)
+        setBoards(reset)
+        setSelectedBoard(reset[0])
     }
 
     function toggleSubtask(columnName: string, taskTitle: string, subtaskIndex: number) {
         setBoards(prevBoards => {
             const updatedBoards = prevBoards.map(board => {
-                if (board.name !== selectedBoard.name) return board;
+                if (board.id !== selectedBoardId) return board;
 
                 return {
                     ...board,
@@ -212,7 +233,7 @@ export function BoardProvider({ children }: { children: ReactNode }) {
                 };
             });
 
-            const updatedSelected = updatedBoards.find(b => b.name === selectedBoard.name);
+            const updatedSelected = updatedBoards.find(b => b.id === selectedBoardId);
             if (updatedSelected) setSelectedBoard(updatedSelected);
             return updatedBoards;
         });

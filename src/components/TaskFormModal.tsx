@@ -16,13 +16,14 @@ export default function TaskFormModal({
 
     const { selectedBoard, addTask, editTask } = useBoard();
 
-    const statusOptions = selectedBoard.columns.map(col => col.name);
+    // statusOptions are column ids (value) with label = column.name
+    const statusOptions = (selectedBoard.columns ?? []).map(col => ({ id: col.id ?? col.name, name: col.name }))
     const [title, setTitle] = useState(initialTask?.title || "");
     const [desc, setDesc] = useState(initialTask?.description || "");
     const [subtasks, setSubtasks] = useState(
         initialTask?.subtasks?.map(st => st.title) || [""]
     );
-    const [status, setStatus] = useState(initialTask?.status || statusOptions[0] || "");
+    const [status, setStatus] = useState(initialTask?.status || statusOptions[0]?.id || "");
     const [error, setError] = useState("");
 
     function handleSubmit(e: React.FormEvent) {
@@ -33,6 +34,7 @@ export default function TaskFormModal({
         }
 
         const newTask = {
+            id: initialTask?.id ?? `task-${Date.now()}`,
             title: title.trim(),
             description: desc.trim(),
             status,
@@ -44,8 +46,8 @@ export default function TaskFormModal({
         }
 
         if (mode === "edit") {
-            // original column is where the task currently lives (initialTask.status)
-            editTask(initialTask?.status ?? status, newTask, initialTask?.title ?? "")
+            // original column id is where the task currently lives (initialTask.status)
+            editTask(initialTask?.status ?? status, newTask, initialTask?.id ?? "")
         } else {
             addTask(status, newTask)
         }
@@ -119,7 +121,7 @@ export default function TaskFormModal({
                     >
                         <option value="" disabled>Select status</option>
                         {statusOptions.map((opt) => (
-                            <option key={opt} value={opt}>{opt}</option>
+                            <option key={opt.id} value={opt.id}>{opt.name}</option>
                         ))}
                     </select>
 

@@ -6,6 +6,7 @@ export interface Subtask {
 }
 
 export interface Task {
+    id?: string
     title: string
     description: string
     status: string
@@ -18,6 +19,7 @@ export interface TaskProps {
 }
 
 export interface Column {
+    id?: string
     name: string
     tasks?: Task[]
 }
@@ -27,6 +29,7 @@ export interface ColumnProps {
 }
 
 export interface Board {
+    id?: string
     name: string
     columns?: Column[]
 }
@@ -37,7 +40,7 @@ export interface BoardProps {
 
 export interface KanbanData {
     boards: Board[]
-    selectedBoardName?: string
+    selectedBoardId?: string
 }
 
 export interface ConfirmModalProps {

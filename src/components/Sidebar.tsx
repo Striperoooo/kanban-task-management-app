@@ -18,13 +18,13 @@ export default function Sidebar() {
         >
 
             <div
-                className="sidebar-modal-container flex flex-col mt-4  bg-white rounded-lg shadow-lg"
+                className="sidebar-modal-container flex flex-col mt-4  bg-white dark:bg-dark-sidebar rounded-lg shadow-lg"
                 onClick={e => e.stopPropagation()} // Prevent closing when clicking inside
             >
 
                 <BoardList />
 
-                <div className="theme-toggle-container mx-4 my-4 w-[235px] h-12 bg-light-bg rounded-md flex justify-center items-center gap-6">
+                <div className="theme-toggle-container mx-4 my-4 w-[235px] h-12 bg-light-bg dark:bg-dark-toggle rounded-md flex justify-center items-center gap-6 transition-colors">
                     <img src={iconLight} alt="Light mode" />
                     <ThemeToggle />
                     <img src={iconDark} alt="Dark mode" />

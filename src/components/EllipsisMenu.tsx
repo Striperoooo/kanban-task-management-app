@@ -16,12 +16,12 @@ export default function EllipsisMenu({ items }: { items: MenuItem[] }) {
 
             {menuOpen && (
                 <div
-                    className={`absolute right-0 mt-2 w-40 bg-white shadow-lg rounded z-50`}
+                    className={`absolute right-0 mt-2 w-40 bg-white dark:bg-dark-surface shadow-lg rounded z-50 transition-colors`}
                 >
                     {items.map((item, idx) => (
                         <button
                             key={idx}
-                            className={`font-medium text-[13px] leading-[23px] block w-full text-left px-4 py-2 hover:bg-gray-100 
+                            className={`font-medium text-[13px] leading-[23px] block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-dark-toggle
                                 ${item.danger
                                     ? "text-[#EA5555]"
                                     : "text-medium-grey"

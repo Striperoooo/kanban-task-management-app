@@ -26,7 +26,7 @@ export default function Column({ column }: ColumnProps) {
         for (const col of (selectedBoard.columns ?? [])) {
             const found = (col.tasks ?? []).find(t => t.id === selectedTask.id);
             if (found) {
-                latest = { ...found, status: col.id };
+                latest = { ...found, status: col.id ?? col.name };
                 break;
             }
         }
@@ -60,7 +60,7 @@ export default function Column({ column }: ColumnProps) {
                     <TaskCard
                         key={task.id ?? task.title}
                         task={task}
-                        onClick={() => setSelectedTask({ ...task, status: column.id })}
+                        onClick={() => setSelectedTask({ ...task, status: column.id ?? column.name })}
                     />
                 ))}
             </SortableContext>
@@ -71,7 +71,7 @@ export default function Column({ column }: ColumnProps) {
                     onClose={() => setSelectedTask(null)}
                     onEdit={() => {
                         // ensure the taskToEdit has the correct original column id
-                        setTaskToEdit({ ...selectedTask, status: column.id })
+                        setTaskToEdit({ ...selectedTask, status: column.id ?? column.name })
                         setEditModalOpen(true)
                         setSelectedTask(null)
                     }}

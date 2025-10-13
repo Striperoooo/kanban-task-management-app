@@ -3,16 +3,14 @@ import { useBoard } from "../contexts/BoardContext";
 import type { Board } from "../types";
 import iconCross from '../assets/icon-cross.svg';
 
-export default function EditBoardModal(
-    { board, onClose }: { board: Board, onClose: () => void }
-) {
-
+export default function EditBoardModal({ board, onClose }: { board: Board, onClose: () => void }) {
     const { setSelectedBoard, updateBoard } = useBoard();
     const [name, setName] = useState(board.name);
     const [error, setError] = useState("");
-    const [columns, setColumns] = useState(board.columns.map(col => col.name));
+    const origCols = board.columns ?? [];
+    const [columns, setColumns] = useState(origCols.map(col => col.name));
 
-    function handleSubmit(e) {
+    function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         if (!name.trim()) {
             setError("Board name is required.");
@@ -25,30 +23,29 @@ export default function EditBoardModal(
             return;
         }
 
-        // Optionally check for unique name if allow renaming
         const updatedBoard = {
             ...board,
             name: name.trim(),
             columns: validColumns.map((col, i) => ({
-                ...board.columns[i],
+                ...origCols[i],
                 name: col.trim(),
-                tasks: board.columns[i]?.tasks || []
+                tasks: origCols[i]?.tasks || []
             })),
             originalName: board.name
         };
         updateBoard(updatedBoard);
-        setSelectedBoard(updatedBoard)
+        setSelectedBoard(updatedBoard);
         onClose();
     }
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50" onClick={onClose}>
-            <div className="bg-white rounded-md p-6 min-w-[320px] max-w-[90vw]" onClick={e => e.stopPropagation()}>
+            <div className="bg-white dark:bg-dark-surface rounded-md p-6 min-w-[320px] max-w-[90vw] transition-colors" onClick={e => e.stopPropagation()}>
                 <h2 className="font-bold text-lg mb-4">Edit Board</h2>
                 <form onSubmit={handleSubmit}>
                     <label className="block font-bold text-xs text-medium-grey mb-2">Board Name</label>
                     <input
-                        className="font-medium text-[13px] leading-[23px] py-2 px-4 border border-[#828FA3] border-opacity-25 rounded-sm p-2 w-full"
+                        className="font-medium text-[13px] leading-[23px] py-2 px-4 border border-[#828FA3] border-opacity-25 rounded-sm p-2 w-full dark:bg-dark-header dark:text-dark-text transition-colors"
                         placeholder="e.g. Web Design"
                         value={name}
                         onChange={e => setName(e.target.value)}
@@ -62,7 +59,7 @@ export default function EditBoardModal(
                     {columns.map((col, idx) => (
                         <div key={idx} className="flex items-center gap-3 mb-3">
                             <input
-                                className="font-medium text-[13px] leading-[23px] py-2 px-4 border border-[#828FA3] border-opacity-25 rounded-sm p-2 w-full active:border-main-purple"
+                                className="font-medium text-[13px] leading-[23px] py-2 px-4 border border-[#828FA3] border-opacity-25 rounded-sm p-2 w-full active:border-main-purple dark:bg-dark-header dark:text-dark-text transition-colors"
                                 placeholder="e.g. Todo"
                                 value={col}
                                 onChange={e => {
@@ -87,7 +84,7 @@ export default function EditBoardModal(
 
                     <button
                         type="button"
-                        className="w-full bg-[#635FC7]/10 font-bold text-center text-main-purple text-[13px] leading-[23px] rounded-[20px] hover:bg-[#635FC7]/25 py-2 mb-6"
+                        className="w-full bg-main-purple/10 dark:bg-white font-bold text-center text-main-purple text-[13px] leading-[23px] rounded-[20px] hover:bg-main-purple/25 py-2 mb-6 transition-colors"
                         onClick={() => setColumns([...columns, ""])}
                     >
                         + Add New Column

@@ -3,7 +3,6 @@ import logoMobile from '../assets/logo-mobile.svg'
 import iconChevDown from '../assets/icon-chevron-down.svg'
 import iconChevUp from '../assets/icon-chevron-up.svg'
 import iconAddTask from '../assets/icon-add-task-mobile.svg'
-import iconEllipsis from '../assets/icon-vertical-ellipsis.svg'
 import { useSidebar } from '../contexts/SidebarContext';
 import { useBoard } from '../contexts/BoardContext';
 import EditBoardModal from './EditBoardModal'
@@ -13,7 +12,7 @@ import EllipsisMenu from './EllipsisMenu'
 
 export default function Header() {
 
-    const { isOpen, toggle, close } = useSidebar()
+    const { isOpen, toggle } = useSidebar()
     const { selectedBoard, deleteBoard } = useBoard()
 
     const [editModalOpen, setEditModalOpen] = useState(false)
@@ -23,7 +22,7 @@ export default function Header() {
     const [taskFormModalOpen, setTaskFormModalOpen] = useState(false)
 
     return (
-        <header className='py-4 px-4 h-16 relative bg-white dark:bg-slate-900 transition-colors'>
+        <header className='py-4 px-4 h-16 relative bg-white dark:bg-dark-header transition-colors'>
             <nav className='flex items-center'>
                 <img src={logoMobile} alt="logo" className="w-6 h-25 mr-4 cursor-pointer" />
 

@@ -9,10 +9,10 @@ function App() {
   return (
     <SidebarProvider>
       <BoardProvider>
-        <div className="h-screen flex flex-col">
+        <div className="h-screen flex flex-col text-black dark:text-dark-text transition-colors">
           <Header />
           <Sidebar />
-          <main className="flex-1 h-full bg-light-bg">
+          <main className="flex-1 h-full bg-light-bg dark:bg-dark-page transition-colors">
             <BoardView />
           </main>
         </div>

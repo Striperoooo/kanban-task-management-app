@@ -1,4 +1,4 @@
-import React from 'react'
+// no default React import required with the JSX transform
 import { useTheme } from '../contexts/ThemeContext'
 
 export default function ThemeToggle() {
@@ -15,8 +15,8 @@ export default function ThemeToggle() {
                 ${isDark ? 'bg-slate-700' : 'bg-slate-200'}`}
         >
             <span
-                className={`absolute left-1 top-1 h-6 w-6 bg-white rounded-full shadow transform transition-transform
-                    ${isDark ? 'translate-x-6' : 'translate-x-0'}`}
+                className={`absolute left-1 top-1 h-6 w-6 rounded-full shadow transform transition-transform
+                    ${isDark ? 'translate-x-6 bg-slate-200' : 'translate-x-0 bg-white'}`}
             />
         </button>
     )

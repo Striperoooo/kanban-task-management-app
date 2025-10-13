@@ -3,7 +3,7 @@ import { useBoard } from "../contexts/BoardContext"
 import iconCross from '../assets/icon-cross.svg'
 
 export default function AddBoardModal({ onClose }: { onClose: () => void }) {
-    const { boards, setSelectedBoard, addBoard } = useBoard()
+    const { boards, addBoard } = useBoard()
     const [name, setName] = useState("")
     const [error, setError] = useState("")
     const [columns, setColumns] = useState<string[]>([""])
@@ -37,7 +37,7 @@ export default function AddBoardModal({ onClose }: { onClose: () => void }) {
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50" onClick={onClose}>
-            <div className="bg-white rounded-md p-6 min-w-[320px] max-w-[90vw]" onClick={e => e.stopPropagation()}>
+            <div className="bg-white dark:bg-dark-surface rounded-md p-6 min-w-[320px] max-w-[90vw] transition-colors" onClick={e => e.stopPropagation()}>
                 <h2 className="font-bold text-lg mb-4">Add New Board</h2>
                 <form onSubmit={handleSubmit}>
                     <label
@@ -47,7 +47,7 @@ export default function AddBoardModal({ onClose }: { onClose: () => void }) {
                         Board Name
                     </label>
                     <input
-                        className="font-medium text-[13px] leading-[23px] py-2 px-4 border border-[#828FA3] border-opacity-25  rounded-sm p-2 w-full"
+                        className="font-medium text-[13px] leading-[23px] py-2 px-4 border border-[#828FA3] border-opacity-25 rounded-sm p-2 w-full dark:bg-dark-header dark:text-dark-text transition-colors"
                         placeholder="e.g. Web Design"
                         value={name}
                         onChange={e => setName(e.target.value)}
@@ -66,7 +66,7 @@ export default function AddBoardModal({ onClose }: { onClose: () => void }) {
                     {columns.map((col, idx) => (
                         <div key={idx} className="flex items-center gap-3 mb-3">
                             <input
-                                className="font-medium text-[13px] leading-[23px] py-2 px-4 border border-[#828FA3] border-opacity-25  rounded-sm p-2 w-full active:border-main-purple"
+                                className="font-medium text-[13px] leading-[23px] py-2 px-4 border border-[#828FA3] border-opacity-25 rounded-sm p-2 w-full active:border-main-purple dark:bg-dark-header dark:text-dark-text transition-colors"
                                 placeholder="e.g. Todo"
                                 value={col}
                                 onChange={e => {
@@ -82,18 +82,13 @@ export default function AddBoardModal({ onClose }: { onClose: () => void }) {
                                 aria-label="Remove column"
                             >
                                 <img src={iconCross} alt="icon cross" />
-
                             </button>
                         </div>
                     ))}
 
-                    {error === "Board must have at least one column." && (
-                        <p className="text-red-500 text-xs mb-2">{error}</p>
-                    )}
-
                     <button
                         type="button"
-                        className="w-full bg-[#635FC7]/10  font-bold  text-center text-main-purple text-[13px] leading-[23px] rounded-[20px] hover:bg-[#635FC7]/25 py-2 mb-6"
+                        className="w-full bg-main-purple/10 dark:bg-white font-bold text-center text-main-purple text-[13px] leading-[23px] rounded-[20px] hover:bg-main-purple/25 py-2 mb-6 transition-colors"
                         onClick={() => setColumns([...columns, ""])}
                     >
                         + Add New Column

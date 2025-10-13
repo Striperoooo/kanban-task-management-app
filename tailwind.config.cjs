@@ -12,6 +12,7 @@ module.exports = {
             },
             colors: {
                 'light-bg': '#F4F7FD',
+                'light-subtask': '#F7F8FB',
                 'main-purple': '#635FC7',
                 'main-purple-hover': '#A8A4FF',
                 'main-purple-second-hover': "#635FC71A",
@@ -21,8 +22,8 @@ module.exports = {
                 'dark-header': '#2B2C37',
                 'dark-page': '#20212C',
                 'dark-surface': '#20212C',
-                // a very dark shade used for subtask backgrounds in dark mode
-                'dark-subtask': '#141416',
+                // a very dark shade used for subtask backgrounds in dark mode (slightly lighter than pure black)
+                'dark-subtask': '#1B1C22',
                 'dark-text': '#FFFFFF',
                 'dark-sidebar': '#2B2C37',
                 'dark-toggle': '#20212C'

@@ -70,7 +70,7 @@ export default function TaskDetailsModal({
                             <li key={inputId} className="mb-2">
                                 <label
                                     htmlFor={inputId}
-                                    className="flex items-center gap-4 font-bold text-xs bg-light-bg dark:bg-dark-subtask p-3 cursor-pointer hover:bg-main-purple/25 rounded-sm transition-colors"
+                                    className="flex items-center gap-4 font-bold text-xs bg-light-subtask dark:bg-dark-subtask p-3 cursor-pointer hover:bg-main-purple/25 rounded-sm transition-colors"
                                 >
                                     <input
                                         id={inputId}

@@ -23,7 +23,7 @@ export default function Header() {
     const [taskFormModalOpen, setTaskFormModalOpen] = useState(false)
 
     return (
-        <header className='py-4 px-4 h-16 relative'>
+        <header className='py-4 px-4 h-16 relative bg-white dark:bg-slate-900 transition-colors'>
             <nav className='flex items-center'>
                 <img src={logoMobile} alt="logo" className="w-6 h-25 mr-4 cursor-pointer" />
 

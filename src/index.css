@@ -10,3 +10,19 @@
 
 
 /* Clean slate CSS - add your styles here */
+
+/* Smooth theme transitions */
+html {
+    transition: background-color 200ms ease, color 200ms ease;
+}
+
+.dark header {
+    /* Example: change header background in dark mode */
+    background-color: #0f172a;
+    /* slate-900 */
+}
+
+.dark .theme-toggle-container {
+    background-color: #1f2937;
+    /* slate-800 */
+}

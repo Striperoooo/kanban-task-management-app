@@ -2,6 +2,7 @@ import { useSidebar } from "../contexts/SidebarContext";
 import BoardList from "./BoardList"
 import iconLight from '../assets/icon-light-theme.svg'
 import iconDark from '../assets/icon-dark-theme.svg'
+import ThemeToggle from './ThemeToggle'
 
 
 export default function Sidebar() {
@@ -24,9 +25,9 @@ export default function Sidebar() {
                 <BoardList />
 
                 <div className="theme-toggle-container mx-4 my-4 w-[235px] h-12 bg-light-bg rounded-md flex justify-center items-center gap-6">
-                    <img src={iconLight} alt="" />
-                    toggle switch
-                    <img src={iconDark} alt="" />
+                    <img src={iconLight} alt="Light mode" />
+                    <ThemeToggle />
+                    <img src={iconDark} alt="Dark mode" />
                 </div>
 
             </div>

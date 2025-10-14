@@ -32,17 +32,6 @@ html,
 body,
 #root {
     height: 100%;
-
-    /* Guard: keep page-level scroll locked and route overflow into the board area */
-    main {
-        /* prevent document-level vertical scroll from appearing */
-        overflow-y: hidden;
-    }
-
-    .board-container {
-        /* allow vertical scrolling inside the board area when content overflows */
-        overflow-y: auto;
-    }
 }
 
 body {
@@ -56,4 +45,15 @@ body {
 .dark body {
     background-color: #20212C;
     /* dark-page */
+}
+
+/* Guard: keep page-level scroll locked and route overflow into the board area */
+main {
+    /* prevent document-level vertical scroll from appearing */
+    overflow-y: hidden;
+}
+
+.board-container {
+    /* allow vertical scrolling inside the board area when content overflows */
+    overflow-y: auto;
 }

@@ -10,13 +10,15 @@ function App() {
     <SidebarProvider>
       <BoardProvider>
         <div className="h-screen flex flex-col text-black dark:text-dark-text transition-colors">
-          <Header />
           {/* Content area: on md+ place sidebar and main side-by-side */}
           <div className="flex-1 flex flex-col md:flex-row min-h-0">
             <Sidebar />
-            <main className="flex-1 h-full min-h-0 flex flex-col bg-light-bg dark:bg-dark-page transition-colors">
-              <BoardView />
-            </main>
+            <div className="flex-1 flex flex-col min-h-0">
+              <Header />
+              <main className="flex-1 min-h-0 flex flex-col bg-light-bg dark:bg-dark-page transition-colors md:pt-0 md:border-t md:border-transparent md:pl-0">
+                <BoardView />
+              </main>
+            </div>
           </div>
         </div>
       </BoardProvider>

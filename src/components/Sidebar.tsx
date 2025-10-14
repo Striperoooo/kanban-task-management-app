@@ -11,11 +11,11 @@ export default function Sidebar() {
     return (
         <>
             {/* Static left sidebar for md+ */}
-            <aside className="hidden md:flex md:flex-col md:min-w-[260px] md:h-full md:pt-4 md:pl-4 bg-white dark:bg-dark-sidebar transition-colors ">
+            <aside className="hidden md:flex md:flex-col md:min-w-[260px] md:h-screen bg-white dark:bg-dark-sidebar transition-colors md:border-r md:border-dark-lines">
                 <div className="sidebar-container flex flex-col gap-4">
                     <BoardList />
 
-                    <div className="theme-toggle-container mx-4 my-4 w-[235px] h-12 bg-light-bg dark:bg-dark-toggle rounded-md flex justify-center items-center gap-6 transition-colors">
+                    <div className="theme-toggle-container mx-auto my-4 w-[90%] h-12 bg-light-bg dark:bg-dark-toggle rounded-md flex justify-center items-center gap-6 transition-colors px-4">
                         <img src={iconLight} alt="Light mode" />
                         <ThemeToggle />
                         <img src={iconDark} alt="Dark mode" />
@@ -35,7 +35,7 @@ export default function Sidebar() {
                     >
                         <BoardList />
 
-                        <div className="theme-toggle-container mx-4 my-4 w-[235px] h-12 bg-light-bg dark:bg-dark-toggle rounded-md flex justify-center items-center gap-6 transition-colors">
+                        <div className="theme-toggle-container my-4 w-full h-12 bg-light-bg dark:bg-dark-toggle rounded-md flex justify-center items-center gap-6 transition-colors px-4">
                             <img src={iconLight} alt="Light mode" />
                             <ThemeToggle />
                             <img src={iconDark} alt="Dark mode" />

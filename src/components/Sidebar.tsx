@@ -8,29 +8,41 @@ import ThemeToggle from './ThemeToggle'
 export default function Sidebar() {
     const { isOpen, close } = useSidebar()
 
-    // Only render modal if sidebarIsOpen
-    if (!isOpen) return null;
-
     return (
-        <div
-            className="fixed top-[64px] left-0 right-0 bottom-0 z-50 bg-black bg-opacity-40 flex justify-center items-start"
-            onClick={close}
-        >
+        <>
+            {/* Static left sidebar for md+ */}
+            <aside className="hidden md:flex md:flex-col md:min-w-[260px] md:h-full md:pt-4 md:pl-4 bg-white dark:bg-dark-sidebar transition-colors ">
+                <div className="sidebar-container flex flex-col gap-4">
+                    <BoardList />
 
-            <div
-                className="sidebar-modal-container flex flex-col mt-4  bg-white dark:bg-dark-sidebar rounded-lg shadow-lg"
-                onClick={e => e.stopPropagation()} // Prevent closing when clicking inside
-            >
-
-                <BoardList />
-
-                <div className="theme-toggle-container mx-4 my-4 w-[235px] h-12 bg-light-bg dark:bg-dark-toggle rounded-md flex justify-center items-center gap-6 transition-colors">
-                    <img src={iconLight} alt="Light mode" />
-                    <ThemeToggle />
-                    <img src={iconDark} alt="Dark mode" />
+                    <div className="theme-toggle-container mx-4 my-4 w-[235px] h-12 bg-light-bg dark:bg-dark-toggle rounded-md flex justify-center items-center gap-6 transition-colors">
+                        <img src={iconLight} alt="Light mode" />
+                        <ThemeToggle />
+                        <img src={iconDark} alt="Dark mode" />
+                    </div>
                 </div>
+            </aside>
 
-            </div>
-        </div>
+            {/* Mobile modal sidebar (existing behavior) */}
+            {isOpen && (
+                <div
+                    className="md:hidden fixed top-[64px] left-0 right-0 bottom-0 z-50 bg-black bg-opacity-40 flex justify-center items-start"
+                    onClick={close}
+                >
+                    <div
+                        className="sidebar-modal-container flex flex-col mt-4 bg-white dark:bg-dark-sidebar rounded-lg shadow-lg"
+                        onClick={e => e.stopPropagation()} // Prevent closing when clicking inside
+                    >
+                        <BoardList />
+
+                        <div className="theme-toggle-container mx-4 my-4 w-[235px] h-12 bg-light-bg dark:bg-dark-toggle rounded-md flex justify-center items-center gap-6 transition-colors">
+                            <img src={iconLight} alt="Light mode" />
+                            <ThemeToggle />
+                            <img src={iconDark} alt="Dark mode" />
+                        </div>
+                    </div>
+                </div>
+            )}
+        </>
     );
 }

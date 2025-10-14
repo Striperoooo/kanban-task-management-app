@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import logoDark from '../assets/logo-light.svg'
+import logoLight from '../assets/logo-dark.svg'
 import logoMobile from '../assets/logo-mobile.svg'
 import iconChevDown from '../assets/icon-chevron-down.svg'
 import iconChevUp from '../assets/icon-chevron-up.svg'
@@ -22,7 +24,7 @@ export default function Header() {
     const [taskFormModalOpen, setTaskFormModalOpen] = useState(false)
 
     return (
-        <header className='py-4 px-4 h-16 relative bg-white dark:bg-dark-header transition-colors'>
+        <header className='py-4 px-4 h-16 relative outline outline-1 outline-dark-lines bg-white dark:bg-dark-header transition-colors'>
             <nav className='flex items-center'>
                 <img src={logoMobile} alt="logo" className="w-6 h-25 mr-4 cursor-pointer" />
 

@@ -26,3 +26,34 @@ html {
     background-color: #1f2937;
     /* slate-800 */
 }
+
+/* Ensure the document root fills the viewport and body background matches the app */
+html,
+body,
+#root {
+    height: 100%;
+
+    /* Guard: keep page-level scroll locked and route overflow into the board area */
+    main {
+        /* prevent document-level vertical scroll from appearing */
+        overflow-y: hidden;
+    }
+
+    .board-container {
+        /* allow vertical scrolling inside the board area when content overflows */
+        overflow-y: auto;
+    }
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background-color: #F4F7FD;
+    /* light-bg */
+    transition: background-color 200ms ease, color 200ms ease;
+}
+
+.dark body {
+    background-color: #20212C;
+    /* dark-page */
+}

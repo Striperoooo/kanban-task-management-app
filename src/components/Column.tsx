@@ -41,7 +41,7 @@ export default function Column({ column }: ColumnProps) {
     const { setNodeRef } = useDroppable({ id: column.id ?? column.name })
 
     return (
-        <div ref={setNodeRef} className="column-container h-full flex flex-col">
+        <div ref={setNodeRef} className="column-container flex-1 min-h-0 flex flex-col">
             <h2 className="column-name mb-6 font-bold text-medium-grey text-xs tracking-[2.4px]">
                 <span className="column-color text-green-600 mr-1">
                     O

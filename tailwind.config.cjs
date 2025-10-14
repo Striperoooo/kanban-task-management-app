@@ -19,6 +19,7 @@ module.exports = {
                 'medium-grey': '#828FA3',
                 // per-theme dark tokens
                 // dark theme colors
+                'dark-lines': '#3E3F4E',
                 'dark-header': '#2B2C37',
                 'dark-page': '#20212C',
                 'dark-surface': '#20212C',

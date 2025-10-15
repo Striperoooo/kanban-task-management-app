@@ -3,16 +3,23 @@ import BoardList from "./BoardList"
 import logoLight from "../assets/logo-light.svg"
 import iconLight from '../assets/icon-light-theme.svg'
 import iconDark from '../assets/icon-dark-theme.svg'
+import iconShow from "../assets/icon-show-sidebar.svg"
+import iconHide from "../assets/icon-hide-sidebar.svg"
 import ThemeToggle from './ThemeToggle'
 
 
 export default function Sidebar() {
-    const { isOpen, close } = useSidebar()
+    const { isOpen, close, isHidden, hide, show } = useSidebar()
 
     return (
         <>
             {/* Static left sidebar for md+ */}
-            <aside className="hidden md:flex md:flex-col md:w-[260px] md:h-full bg-white dark:bg-dark-sidebar transition-colors md:border-r md:border-dark-lines">
+            <aside
+                className={[
+                    "hidden md:flex md:flex-col md:h-full bg-white dark:bg-dark-sidebar md:border-r md:border-dark-lines transition-all duration-300",
+                    isHidden ? "md:w-0 md:overflow-hidden md:opacity-0" : "md:w-[260px] md:opacity-100"
+                ].join(' ')}
+            >
 
                 <img
                     src={logoLight}
@@ -29,6 +36,17 @@ export default function Sidebar() {
                         <ThemeToggle />
                         <img src={iconDark} alt="Dark mode" />
                     </div>
+
+                    <div className="mt-6 px-6">
+                        <button
+                            onClick={() => hide()}
+                            className="hidden md:inline-flex items-center gap-3 text-medium-grey font-bold text-sm"
+                        >
+                            <img src={iconHide} alt="hide sidebar" />
+                            <span>Hide Sidebar</span>
+                        </button>
+                    </div>
+
                 </div>
             </aside>
 
@@ -49,8 +67,20 @@ export default function Sidebar() {
                             <ThemeToggle />
                             <img src={iconDark} alt="Dark mode" />
                         </div>
+
                     </div>
                 </div>
+            )}
+
+            {/* Show-pill when sidebar is hidden (md+) */}
+            {isHidden && (
+                <button
+                    onClick={() => show()}
+                    className="hidden md:flex items-center justify-center fixed left-4 bottom-6 z-50 bg-main-purple text-white rounded-full h-10 w-12 shadow-lg transition-all duration-300 ease-in-out"
+                    aria-label="Show sidebar"
+                >
+                    <img src={iconShow} alt="show sidebar" className="w-4 h-4" />
+                </button>
             )}
         </>
     );

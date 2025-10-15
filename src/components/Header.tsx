@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import logoMobile from '../assets/logo-mobile.svg'
+import logoLight from "../assets/logo-light.svg"
 import iconChevDown from '../assets/icon-chevron-down.svg'
 import iconChevUp from '../assets/icon-chevron-up.svg'
 import iconAddTask from '../assets/icon-add-task-mobile.svg'
@@ -12,7 +13,7 @@ import EllipsisMenu from './EllipsisMenu'
 
 export default function Header() {
 
-    const { isOpen, toggle } = useSidebar()
+    const { isOpen, toggle, isHidden } = useSidebar()
     const { selectedBoard, deleteBoard } = useBoard()
 
     const [editModalOpen, setEditModalOpen] = useState(false)
@@ -27,10 +28,22 @@ export default function Header() {
 
                 <img src={logoMobile} alt="logo" className="w-6 h-6 mr-4 cursor-pointer md:hidden" />
 
+                {isHidden && (
+                    <div className='h-full border-r border-r-dark-lines pr-6 mr-6'>
+                        <img
+                            src={logoLight}
+                            alt="logo"
+                            className="hidden md:inline w-[150px] py-4 ml-2 r-12 mb-10"
+                        />
+                    </div>
+
+                )}
+
                 <div
                     className='flex items-center h-full cursor-pointer md:cursor-default'
                     onClick={toggle}
                 >
+
                     <span className="font-bold text-lg mr-2 md:text-xl">{selectedBoard.name}</span>
                     <img src={isOpen ? iconChevUp : iconChevDown} alt="toggle sidebar icon" className='w-2 h-1.5 md:hidden' />
                 </div>
@@ -88,6 +101,6 @@ export default function Header() {
 
                 </div>
             </nav>
-        </header>
+        </header >
     )
 }

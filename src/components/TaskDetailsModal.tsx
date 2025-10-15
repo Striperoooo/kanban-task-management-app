@@ -77,7 +77,7 @@ export default function TaskDetailsModal({
                                         type="checkbox"
                                         checked={sub.isCompleted}
                                         onChange={() => handleToggleSubtask(i)}
-                                        className="shrink-0"
+                                        className="shrink-0 cursor-pointer"
                                     />
                                     <span className={sub.isCompleted ? "line-through text-medium-grey" : ""}>
                                         {sub.title}
@@ -90,7 +90,7 @@ export default function TaskDetailsModal({
 
                 <label className="inline-block font-bold text-xs text-medium-grey mb-2">Current Status</label>
                 <select
-                    className="font-medium bg-white dark:bg-dark-header text-[13px] leading-[23px] py-2 px-4 border border-[#828FA3] border-opacity-25 rounded-sm p-2 w-full transition-colors"
+                    className="font-medium bg-white dark:bg-dark-header text-[13px] leading-[23px] py-2 px-4 border border-[#828FA3] border-opacity-25 rounded-sm p-2 w-full transition-colors cursor-pointer"
                     value={status}
                     onChange={handleStatusChange}
                 >

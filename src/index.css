@@ -72,12 +72,8 @@ main {
     overflow: visible;
 }
 
-/* Contain layout so children (task cards, drag mirrors) don't affect
-   document-level layout/scroll calculations. This isolates the board's
-   layout and prevents descendants from increasing html.scrollHeight. */
-.board-container {
-    contain: layout;
-}
+/* Note: containment removed — letting children influence the inner scroll
+    area so .board-inner can measure correctly. */
 
 .board-container {
     /* Ensure the board cannot push the document taller than the viewport
@@ -102,7 +98,4 @@ main {
     height: 100%;
 }
 
-/* Contain individual task lists so their children can't affect document layout */
-.tasks-list {
-    contain: layout;
-}
+/* Note: .tasks-list containment removed for the same reason. */

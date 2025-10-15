@@ -21,9 +21,9 @@ module.exports = {
                 'dark-lines': '#3E3F4E',
                 'dark-header': '#2B2C37',
                 'dark-page': '#20212C',
-                'dark-surface': '#20212C',
+                'dark-surface': '#2B2C37',
                 // a very dark shade used for subtask backgrounds in dark mode
-                'dark-subtask': '#141416',
+                'dark-subtask': '#20212C',
                 'dark-text': '#FFFFFF',
                 'dark-sidebar': '#2B2C37',
                 'dark-toggle': '#20212C'

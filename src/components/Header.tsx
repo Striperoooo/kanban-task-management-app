@@ -26,13 +26,14 @@ export default function Header() {
     return (
         <header className='py-4 px-4 h-16 relative bg-white dark:bg-dark-header transition-colors'>
             <nav className='flex items-center'>
-                <img src={logoMobile} alt="logo" className="w-6 h-25 mr-4 cursor-pointer" />
+
+                <img src={logoMobile} alt="logo" className="w-6 h-25 mr-4 cursor-pointer md:hidden" />
 
                 <div
                     className='flex items-center cursor-pointer'
                     onClick={toggle}
                 >
-                    <span className="font-bold text-lg mr-2">{selectedBoard.name}</span>
+                    <span className="font-bold text-lg mr-2 md:text-xl">{selectedBoard.name}</span>
                     <img src={isOpen ? iconChevUp : iconChevDown} alt="toggle sidebar icon" className='mt-1 w-2 h-1.5' />
                 </div>
 

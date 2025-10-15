@@ -1,5 +1,6 @@
 import { useSidebar } from "../contexts/SidebarContext";
 import BoardList from "./BoardList"
+import logoLight from "../assets/logo-light.svg"
 import iconLight from '../assets/icon-light-theme.svg'
 import iconDark from '../assets/icon-dark-theme.svg'
 import ThemeToggle from './ThemeToggle'
@@ -11,8 +12,16 @@ export default function Sidebar() {
     return (
         <>
             {/* Static left sidebar for md+ */}
-            <aside className="hidden md:flex md:flex-col md:min-w-[260px] md:h-full bg-white dark:bg-dark-sidebar transition-colors md:border-r md:border-dark-lines">
+            <aside className="hidden md:flex md:flex-col md:w-[260px] md:h-full bg-white dark:bg-dark-sidebar transition-colors md:border-r md:border-dark-lines">
+
+                <img
+                    src={logoLight}
+                    alt="logo"
+                    className="w-[150px] ml-6 mt-7 mb-10"
+                />
+
                 <div className="sidebar-container flex flex-col gap-4">
+
                     <BoardList />
 
                     <div className="theme-toggle-container mx-auto my-4 w-[90%] h-12 bg-light-bg dark:bg-dark-toggle rounded-md flex justify-center items-center gap-6 transition-colors px-4">
@@ -30,12 +39,12 @@ export default function Sidebar() {
                     onClick={close}
                 >
                     <div
-                        className="sidebar-modal-container flex flex-col mt-4 bg-white dark:bg-dark-sidebar rounded-lg shadow-lg"
+                        className="sidebar-modal-container flex flex-col mt-4 bg-white w-[75%] dark:bg-dark-sidebar rounded-lg shadow-lg"
                         onClick={e => e.stopPropagation()} // Prevent closing when clicking inside
                     >
                         <BoardList />
 
-                        <div className="theme-toggle-container my-4 w-full h-12 bg-light-bg dark:bg-dark-toggle rounded-md flex justify-center items-center gap-6 transition-colors px-4">
+                        <div className="theme-toggle-container my-4 w-[85%] mx-auto h-12 bg-light-bg dark:bg-dark-toggle rounded-md flex justify-center items-center gap-6 transition-colors px-4">
                             <img src={iconLight} alt="Light mode" />
                             <ThemeToggle />
                             <img src={iconDark} alt="Dark mode" />

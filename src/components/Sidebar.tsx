@@ -66,15 +66,18 @@ export default function Sidebar() {
                     onClick={close}
                 >
                     <div
+                        role="dialog"
+                        aria-modal="true"
+                        aria-label="Sidebar navigation"
                         className="sidebar-modal-container flex flex-col mt-16 bg-white w-[75%] dark:bg-dark-sidebar rounded-lg shadow-lg"
                         onClick={e => e.stopPropagation()} // Prevent closing when clicking inside
                     >
                         <BoardList />
 
                         <div className="theme-toggle-container my-4 w-[85%] mx-auto h-12 bg-light-bg dark:bg-dark-toggle rounded-md flex justify-center items-center gap-6 transition-colors px-4">
-                            <img src={iconLight} alt="Light mode" />
+                            <img src={iconLight} alt="" aria-hidden="true" />
                             <ThemeToggle />
-                            <img src={iconDark} alt="Dark mode" />
+                            <img src={iconDark} alt="" aria-hidden="true" />
                         </div>
 
                     </div>

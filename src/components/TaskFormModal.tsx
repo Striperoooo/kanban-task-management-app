@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useBoard } from "../contexts/BoardContext";
 import iconCross from '../assets/icon-cross.svg'
 import type { Task } from "../types"
@@ -55,10 +55,18 @@ export default function TaskFormModal({
 
     }
 
+    useEffect(() => {
+        function onKey(e: KeyboardEvent) {
+            if (e.key === 'Escape') onClose()
+        }
+        document.addEventListener('keydown', onKey)
+        return () => document.removeEventListener('keydown', onKey)
+    }, [onClose])
+
     return (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50" onClick={onClose}>
-            <div className="bg-white dark:bg-dark-surface rounded-md p-6 min-w-[320px] max-w-[90vw] max-h-[calc(100vh-2rem)] overflow-y-auto transition-colors" onClick={e => e.stopPropagation()}>
-                <h2 className="font-bold text-lg mb-6">
+            <div role="dialog" aria-modal="true" aria-labelledby="task-form-title" className="bg-white dark:bg-dark-surface rounded-md p-6 min-w-[320px] max-w-[90vw] max-h-[calc(100vh-2rem)] overflow-y-auto transition-colors" onClick={e => e.stopPropagation()}>
+                <h2 id="task-form-title" className="font-bold text-lg mb-6">
                     {mode === "edit" ? "Edit Task" : "Add New Task"}
                 </h2>
 

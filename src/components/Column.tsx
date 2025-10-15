@@ -100,7 +100,7 @@ export default function Column({ column }: ColumnProps) {
             {deleteModalOpen && taskToDelete && (
                 <ConfirmModal
                     title="Delete this task?"
-                    message={`Are you sure you want to delete the '${taskToDelete.title}' task and its subtask? This action cannot be reversed.`}
+                    message={`Are you sure you want to delete the '${taskToDelete.title}' task and its subtasks? This action cannot be reversed.`}
                     danger
                     onConfirm={() => {
                         deleteTask(column.id ?? column.name, taskToDelete.id ?? taskToDelete.title)

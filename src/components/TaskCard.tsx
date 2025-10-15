@@ -15,11 +15,21 @@ export default function TaskCard({ task, onClick }: TaskProps) {
         transition
     }
 
+    function handleKeyDown(e: React.KeyboardEvent) {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            onClick?.()
+        }
+    }
+
     return (
         <div
             ref={setNodeRef}
             style={style}
-            className="taskcard-container relative bg-white dark:bg-dark-header rounded-lg px-4 py-6 mb-5 w-[280px] shadow-light-drop-shadow cursor-pointer hover:text-main-purple transition-colors"
+            role="button"
+            tabIndex={0}
+            onKeyDown={handleKeyDown}
+            className="taskcard-container relative bg-white dark:bg-dark-header rounded-lg px-4 py-6 mb-5 w-[280px] shadow-light-drop-shadow cursor-pointer hover:text-main-purple transition-colors focus:outline-none focus:ring-2 focus:ring-main-purple"
             onClick={onClick}
         >
             {/* Drag handle: listeners/attributes live here so clicking the card body doesn't start a drag */}
@@ -32,7 +42,7 @@ export default function TaskCard({ task, onClick }: TaskProps) {
                 className="absolute top-2 right-2 p-1 text-medium-grey hover:text-main-purple cursor-grab"
             >
                 {/* simple grip icon */}
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                     <path d="M10 6h2v2h-2zM14 6h2v2h-2zM6 6h2v2H6zM10 10h2v2h-2zM14 10h2v2h-2zM6 10h2v2H6zM10 14h2v2h-2zM14 14h2v2h-2zM6 14h2v2H6z" fill="currentColor" />
                 </svg>
             </button>

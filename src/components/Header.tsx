@@ -26,7 +26,7 @@ export default function Header() {
         <header className='px-4 h-16 relative bg-white dark:bg-dark-header transition-colors'>
             <nav className='flex items-center h-full'>
 
-                <img src={logoMobile} alt="logo" className="w-6 h-6 mr-4 cursor-pointer md:hidden" />
+                <img src={logoMobile} alt="" aria-hidden="true" className="w-6 h-6 mr-4 cursor-pointer md:hidden" />
 
                 {isHidden && (
                     <div className='h-full border-r border-r-dark-lines pr-6 mr-6'>
@@ -50,10 +50,11 @@ export default function Header() {
 
                 <div className='ml-auto flex items-center h-full'>
                     <button
+                        aria-label="Add new task"
                         className='inline-flex items-center justify-center text-sm text-white font-bold bg-main-purple h-10 px-4 rounded-3xl cursor-pointer mr-4 hover:bg-main-purple-hover leading-none'
                         onClick={() => setTaskFormModalOpen(true)}
                     >
-                        <img src={iconAddTask} alt="add task icon" className='w-3 h-3 md:hidden' />
+                        <img src={iconAddTask} alt="" aria-hidden="true" className='w-3 h-3 md:hidden' />
                         <span className="hidden md:inline">+ Add New Task</span>
                     </button>
 

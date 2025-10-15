@@ -71,7 +71,7 @@ export default function BoardView() {
 
     return (
         <DndContext onDragEnd={handleDragEnd} onDragOver={handleDragOver}>
-            <div className='board-container flex-1 min-h-0 flex overflow-x-auto gap-6 px-6 py-0 box-border items-stretch'>
+            <div className='board-container flex-1 min-h-0 flex overflow-x-auto gap-6 ml-1 px-6 py-0 box-border items-stretch'>
                 <div className='board-inner w-full flex gap-6 py-6 px-4'>
                     {(selectedBoard.columns ?? []).map((column) => (
                         <Column key={column.id ?? column.name} column={column} />

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useBoard } from "../contexts/BoardContext"
 import iconCross from '../assets/icon-cross.svg'
 
@@ -46,10 +46,18 @@ export default function AddBoardModal({ onClose }: { onClose: () => void }) {
     }
 
 
+    useEffect(() => {
+        function onKey(e: KeyboardEvent) {
+            if (e.key === 'Escape') onClose()
+        }
+        document.addEventListener('keydown', onKey)
+        return () => document.removeEventListener('keydown', onKey)
+    }, [onClose])
+
     return (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50" onClick={onClose}>
-            <div className="bg-white dark:bg-dark-surface rounded-md p-6 min-w-[320px] max-w-[90vw] transition-colors" onClick={e => e.stopPropagation()}>
-                <h2 className="font-bold text-lg mb-4">Add New Board</h2>
+            <div role="dialog" aria-modal="true" aria-labelledby="add-board-title" className="bg-white dark:bg-dark-surface rounded-md p-6 min-w-[320px] max-w-[90vw] transition-colors" onClick={e => e.stopPropagation()}>
+                <h2 id="add-board-title" className="font-bold text-lg mb-4">Add New Board</h2>
                 <form onSubmit={handleSubmit}>
                     <label
                         htmlFor="board-name"
@@ -98,7 +106,7 @@ export default function AddBoardModal({ onClose }: { onClose: () => void }) {
                                 onClick={() => setColumns(columns.filter((_, i) => i !== idx))}
                                 aria-label="Remove column"
                             >
-                                <img src={iconCross} alt="icon cross" />
+                                <img src={iconCross} alt="" aria-hidden="true" />
                             </button>
                         </div>
                     ))}

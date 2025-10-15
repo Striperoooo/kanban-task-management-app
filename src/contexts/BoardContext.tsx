@@ -73,11 +73,11 @@ export function BoardProvider({ children }: { children: ReactNode }) {
     const selectedBoard = boards.find(b => b.id === selectedBoardId) ?? boards[0]
 
     function addBoard(newBoard: Board) {
-        // Generate a unique id for the new board so columns/tasks are namespaced correctly
-        const uniqueBoardId = `board-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
-        // Ensure ids for the new board and its descendants using the generated id
+        // Generate a unique id for the new board to avoid colliding with seeded ids
+        const uniqueBoardId = `board-${Date.now()}`
+        // Ensure ids for the new board and its descendants, using the unique id
         const normalized = ensureIds([{ ...newBoard, id: uniqueBoardId }])[0]
-        const boardWithId = { ...normalized }
+        const boardWithId = { ...normalized, id: uniqueBoardId }
         // Append and set selected board id directly
         const next = [...boards, boardWithId]
         setBoards(next)

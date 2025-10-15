@@ -16,7 +16,7 @@ export default function Sidebar() {
             {/* Static left sidebar for md+ */}
             <aside
                 className={[
-                    "hidden md:flex md:flex-col md:h-full bg-white dark:bg-dark-sidebar md:border-r md:border-dark-lines transition-all duration-300",
+                    "hidden md:flex md:flex-col md:h-full bg-white dark:bg-dark-sidebar md:border-r md:border-light-lines dark:md:border-dark-lines  transition-all duration-300",
                     isHidden ? "md:w-0 md:overflow-hidden md:opacity-0" : "md:w-[260px] md:opacity-100"
                 ].join(' ')}
             >
@@ -50,14 +50,14 @@ export default function Sidebar() {
                 </div>
             </aside>
 
-            {/* Mobile modal sidebar (existing behavior) */}
+            {/* Mobile modal sidebar */}
             {isOpen && (
                 <div
-                    className="md:hidden fixed top-[64px] left-0 right-0 bottom-0 z-50 bg-black bg-opacity-40 flex justify-center items-start"
+                    className="md:hidden fixed inset-0 z-50 bg-black bg-opacity-40 flex justify-center items-start"
                     onClick={close}
                 >
                     <div
-                        className="sidebar-modal-container flex flex-col mt-4 bg-white w-[75%] dark:bg-dark-sidebar rounded-lg shadow-lg"
+                        className="sidebar-modal-container flex flex-col mt-16 bg-white w-[75%] dark:bg-dark-sidebar rounded-lg shadow-lg"
                         onClick={e => e.stopPropagation()} // Prevent closing when clicking inside
                     >
                         <BoardList />

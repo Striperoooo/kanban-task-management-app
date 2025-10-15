@@ -50,7 +50,7 @@ export default function Header() {
 
                 <div className='ml-auto flex items-center h-full'>
                     <button
-                        className='inline-flex items-center justify-center text-sm font-bold bg-main-purple h-10 px-4 rounded-3xl cursor-pointer mr-4 hover:bg-main-purple-hover leading-none'
+                        className='inline-flex items-center justify-center text-sm text-white font-bold bg-main-purple h-10 px-4 rounded-3xl cursor-pointer mr-4 hover:bg-main-purple-hover leading-none'
                         onClick={() => setTaskFormModalOpen(true)}
                     >
                         <img src={iconAddTask} alt="add task icon" className='w-3 h-3 md:hidden' />

@@ -1,9 +1,13 @@
 import { useState } from 'react';
 import { useBoard } from '../contexts/BoardContext';
+import { useSidebar } from '../contexts/SidebarContext';
 import AddBoardModal from './AddBoardModal';
 
 export default function BoardList() {
     const { boards, selectedBoard, setSelectedBoard } = useBoard()
+
+    const { close } = useSidebar()
+
     const [showBoardModal, setShowBoardModal] = useState(false)
 
     return (
@@ -25,7 +29,10 @@ export default function BoardList() {
                                         : "text-medium-grey hover:bg-main-purple-second-hover hover:text-main-purple",
                                 ].join(" ")
                             }
-                            onClick={() => setSelectedBoard(board)}
+                            onClick={() => {
+                                setSelectedBoard(board)
+                                close()
+                            }}
                         >
                             <div className="pl-6 flex items-center gap-3">
                                 <svg

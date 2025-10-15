@@ -19,7 +19,7 @@ export default function TaskCard({ task, onClick }: TaskProps) {
         <div
             ref={setNodeRef}
             style={style}
-            className="taskcard-container relative bg-white dark:bg-dark-header rounded-lg px-4 py-6 mb-5 min-w-[280px] shadow-light-drop-shadow cursor-pointer hover:text-main-purple transition-colors"
+            className="taskcard-container relative bg-white dark:bg-dark-header rounded-lg px-4 py-6 mb-5 w-[280px] shadow-light-drop-shadow cursor-pointer hover:text-main-purple transition-colors"
             onClick={onClick}
         >
             {/* Drag handle: listeners/attributes live here so clicking the card body doesn't start a drag */}

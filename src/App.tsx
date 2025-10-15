@@ -9,7 +9,7 @@ function App() {
   return (
     <SidebarProvider>
       <BoardProvider>
-        <div className="h-screen flex flex-col text-black dark:text-dark-text transition-colors">
+        <div className="min-h-screen flex flex-col text-black dark:text-dark-text transition-colors">
           {/* Content area: on md+ place sidebar and main side-by-side */}
           <div className="flex-1 flex flex-col md:flex-row min-h-0">
             <Sidebar />

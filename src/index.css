@@ -99,3 +99,17 @@ main {
 }
 
 /* Note: .tasks-list containment removed for the same reason. */
+
+/* Ensure every column has some breathing room at the bottom.
+   Because the board uses an absolutely-positioned scrolling container
+   and columns are set to height:100%, adding padding on some elements
+   can appear to only move content down (top) while the bottom remains
+   flush. A pseudo-element spacer after the task list guarantees visible
+   space below the last task without changing layout heights. */
+.tasks-list::after {
+    content: '';
+    display: block;
+    height: 2rem;
+    /* adjust to taste: 3rem ~= 48px */
+    flex-shrink: 0;
+}

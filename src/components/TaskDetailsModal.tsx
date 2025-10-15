@@ -42,7 +42,7 @@ export default function TaskDetailsModal({
             onClick={onClose}
         >
             <div
-                className="bg-white dark:bg-dark-surface rounded-lg p-6 min-w-[320px] max-w-[90vw] relative transition-colors"
+                className="bg-white dark:bg-dark-surface rounded-lg p-6 min-w-[320px] max-w-[480px] relative transition-colors"
                 onClick={e => e.stopPropagation()}
             >
                 <div className="flex items-center justify-between mb-2">

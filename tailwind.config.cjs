@@ -16,7 +16,7 @@ module.exports = {
                 'main-purple-hover': '#A8A4FF',
                 'main-purple-second-hover': "#635FC71A",
                 'medium-grey': '#828FA3',
-                'lines-light': '#E4EBFA',
+                'light-lines': '#E4EBFA',
                 // per-theme dark tokens
                 // dark theme colors
                 'dark-lines': '#3E3F4E',

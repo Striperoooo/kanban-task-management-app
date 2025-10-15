@@ -52,7 +52,7 @@ export default function Column({ column }: ColumnProps) {
                 </span>
             </h2>
 
-            <div className="tasks-list flex-1 min-h-0">
+            <div className="tasks-list flex-1 min-h-0 pb-6">
                 <SortableContext
                     items={(column.tasks ?? []).map(t => t.id ?? t.title)}
                     strategy={verticalListSortingStrategy}

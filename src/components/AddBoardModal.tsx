@@ -5,23 +5,29 @@ import iconCross from '../assets/icon-cross.svg'
 export default function AddBoardModal({ onClose }: { onClose: () => void }) {
     const { boards, addBoard } = useBoard()
     const [name, setName] = useState("")
-    const [error, setError] = useState("")
+    const [nameError, setNameError] = useState("")
+    const [columnsError, setColumnsError] = useState("")
     const [columns, setColumns] = useState<string[]>([""])
 
     function handleSubmit(e: React.FormEvent) {
         e.preventDefault()
+        // clear previous errors
+        // clear previous errors
+        setNameError("")
+        setColumnsError("")
+
         if (!name.trim()) {
-            setError("Board name is required.")
+            setNameError("Board name is required.")
             return
         }
         if (boards.some(b => b.name === name.trim())) {
-            setError("Board name must be unique.")
+            setNameError("Board name must be unique.")
             return
         }
 
         const validColumns = columns.filter(col => col.trim() !== "");
         if (validColumns.length === 0) {
-            setError("Board must have at least one column.");
+            setColumnsError("Board must have at least one column.");
             return;
         }
 
@@ -29,7 +35,12 @@ export default function AddBoardModal({ onClose }: { onClose: () => void }) {
             name: name.trim(),
             columns: validColumns.map(col => ({ name: col.trim(), tasks: [] }))
         }
-        addBoard(newBoard)
+        try {
+            addBoard(newBoard)
+        } catch (err) {
+            setColumnsError('Failed to create board. See console for details.')
+            return
+        }
         onClose()
 
     }
@@ -50,11 +61,15 @@ export default function AddBoardModal({ onClose }: { onClose: () => void }) {
                         className="font-medium text-[13px] leading-[23px] py-2 px-4 border border-[#828FA3] border-opacity-25 rounded-sm p-2 w-full dark:bg-dark-header dark:text-dark-text transition-colors"
                         placeholder="e.g. Web Design"
                         value={name}
-                        onChange={e => setName(e.target.value)}
+                        onChange={e => {
+                            setName(e.target.value)
+                            if (nameError) setNameError("")
+                        }}
+
                     />
 
-                    {(error === "Board name is required." || error === "Board name must be unique.") && (
-                        <p className="text-red-500 text-xs mb-2">{error}</p>
+                    {nameError && (
+                        <p className="text-red-500 text-xs mt-3 mb-2">{nameError}</p>
                     )}
 
                     <label
@@ -73,6 +88,8 @@ export default function AddBoardModal({ onClose }: { onClose: () => void }) {
                                     const newCols = [...columns];
                                     newCols[idx] = e.target.value;
                                     setColumns(newCols);
+                                    // clear column error when user types
+                                    if (columnsError) setColumnsError("")
                                 }}
                             />
                             <button
@@ -86,6 +103,11 @@ export default function AddBoardModal({ onClose }: { onClose: () => void }) {
                         </div>
                     ))}
 
+                    {columnsError && (
+                        <p className="text-red-500 text-xs mb-4">{columnsError}</p>
+                    )}
+
+
                     <button
                         type="button"
                         className="w-full bg-main-purple/10 dark:bg-white font-bold text-center text-main-purple text-[13px] leading-[23px] rounded-[20px] hover:bg-main-purple/25 py-2 mb-6 transition-colors"
@@ -93,6 +115,7 @@ export default function AddBoardModal({ onClose }: { onClose: () => void }) {
                     >
                         + Add New Column
                     </button>
+
 
                     <div className="flex gap-2 justify-end">
                         <button

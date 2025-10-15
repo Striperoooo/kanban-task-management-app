@@ -11,7 +11,7 @@ export default function Sidebar() {
     return (
         <>
             {/* Static left sidebar for md+ */}
-            <aside className="hidden md:flex md:flex-col md:min-w-[260px] md:h-screen bg-white dark:bg-dark-sidebar transition-colors md:border-r md:border-dark-lines">
+            <aside className="hidden md:flex md:flex-col md:min-w-[260px] md:h-full bg-white dark:bg-dark-sidebar transition-colors md:border-r md:border-dark-lines">
                 <div className="sidebar-container flex flex-col gap-4">
                     <BoardList />
 

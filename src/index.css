@@ -34,6 +34,13 @@ body,
     height: 100%;
 }
 
+html,
+body,
+#root {
+    /* use viewport height to avoid percent-based collapses */
+    height: 100vh;
+}
+
 body {
     margin: 0;
     min-height: 100vh;
@@ -50,10 +57,52 @@ body {
 /* Guard: keep page-level scroll locked and route overflow into the board area */
 main {
     /* prevent document-level vertical scroll from appearing */
-    overflow-y: hidden;
+
+    main {
+        /* prevent document-level vertical scroll from appearing; board handles scroll */
+        overflow-y: hidden;
+    }
 }
 
 .board-container {
-    /* allow vertical scrolling inside the board area when content overflows */
-    overflow-y: auto;
+    /* positioning context for absolute inner board; don't let children
+       directly affect document layout. The inner .board-inner will
+       handle scrolling. */
+    position: relative;
+    overflow: visible;
+}
+
+/* Contain layout so children (task cards, drag mirrors) don't affect
+   document-level layout/scroll calculations. This isolates the board's
+   layout and prevents descendants from increasing html.scrollHeight. */
+.board-container {
+    contain: layout;
+}
+
+.board-container {
+    /* Ensure the board cannot push the document taller than the viewport
+       (subtract header height). This is a defensive guard if flex sizing
+       doesn't constrain the box in some breakpoints. */
+    max-height: calc(100vh - 64px);
+}
+
+.board-inner {
+    /* absolute-position the inner board to create a true layout boundary
+       and allow it to scroll internally without affecting the document */
+    position: absolute;
+    inset: 0;
+    overflow: auto;
+    box-sizing: border-box;
+    min-height: 0;
+    align-items: stretch;
+}
+
+.column-container {
+    /* ensure columns stretch to the board height and don't introduce extra space */
+    height: 100%;
+}
+
+/* Contain individual task lists so their children can't affect document layout */
+.tasks-list {
+    contain: layout;
 }

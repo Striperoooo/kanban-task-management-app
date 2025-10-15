@@ -52,18 +52,20 @@ export default function Column({ column }: ColumnProps) {
                 </span>
             </h2>
 
-            <SortableContext
-                items={(column.tasks ?? []).map(t => t.id ?? t.title)}
-                strategy={verticalListSortingStrategy}
-            >
-                {(column.tasks ?? []).map(task => (
-                    <TaskCard
-                        key={task.id ?? task.title}
-                        task={task}
-                        onClick={() => setSelectedTask({ ...task, status: column.id ?? column.name })}
-                    />
-                ))}
-            </SortableContext>
+            <div className="tasks-list flex-1 min-h-0 overflow-y-auto">
+                <SortableContext
+                    items={(column.tasks ?? []).map(t => t.id ?? t.title)}
+                    strategy={verticalListSortingStrategy}
+                >
+                    {(column.tasks ?? []).map(task => (
+                        <TaskCard
+                            key={task.id ?? task.title}
+                            task={task}
+                            onClick={() => setSelectedTask({ ...task, status: column.id ?? column.name })}
+                        />
+                    ))}
+                </SortableContext>
+            </div>
 
             {selectedTask && !editModalOpen && (
                 <TaskDetailsModal

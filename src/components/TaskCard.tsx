@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { TaskProps } from "../types";
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -15,6 +16,45 @@ export default function TaskCard({ task, onClick }: TaskProps) {
         transition
     }
 
+    // visual-only state for showing a rounded grip when dragging/touching
+    const [gripActive, setGripActive] = useState(false)
+
+    // merge sortable attributes/listeners and forward original handlers so we don't change DnD logic
+    const mergedHandlers = {
+        ...(attributes as any),
+        ...(listeners as any),
+        onPointerDown: (e: any) => {
+            (attributes as any).onPointerDown?.(e)
+                ; (listeners as any).onPointerDown?.(e)
+            if (e.pointerType === 'touch') setGripActive(true)
+        },
+        onPointerUp: (e: any) => {
+            (attributes as any).onPointerUp?.(e)
+                ; (listeners as any).onPointerUp?.(e)
+            setGripActive(false)
+        },
+        onPointerCancel: (e: any) => {
+            (attributes as any).onPointerCancel?.(e)
+                ; (listeners as any).onPointerCancel?.(e)
+            setGripActive(false)
+        },
+        onPointerLeave: (e: any) => {
+            (attributes as any).onPointerLeave?.(e)
+                ; (listeners as any).onPointerLeave?.(e)
+            setGripActive(false)
+        },
+        onTouchStart: (e: any) => {
+            (attributes as any).onTouchStart?.(e)
+                ; (listeners as any).onTouchStart?.(e)
+            setGripActive(true)
+        },
+        onTouchEnd: (e: any) => {
+            (attributes as any).onTouchEnd?.(e)
+                ; (listeners as any).onTouchEnd?.(e)
+            setGripActive(false)
+        }
+    }
+
     function handleKeyDown(e: React.KeyboardEvent) {
         if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault()
@@ -29,20 +69,19 @@ export default function TaskCard({ task, onClick }: TaskProps) {
             role="button"
             tabIndex={0}
             onKeyDown={handleKeyDown}
-            className="taskcard-container relative bg-white dark:bg-dark-header rounded-lg px-4 py-6 mb-5 w-[280px] shadow-light-drop-shadow cursor-pointer hover:text-main-purple transition-colors focus:outline-none focus:ring-2 focus:ring-main-purple"
+            className="taskcard-container relative bg-white dark:bg-dark-header rounded-lg px-4 pr-12 md:pr-4 py-6 mb-5 w-[280px] shadow-light-drop-shadow cursor-pointer hover:text-main-purple transition-colors focus:outline-none focus:ring-2 focus:ring-main-purple"
             onClick={onClick}
         >
             {/* Drag handle: listeners/attributes live here so clicking the card body doesn't start a drag */}
             <button
                 type="button"
-                {...attributes}
-                {...listeners}
+                {...mergedHandlers}
                 onClick={(e) => e.stopPropagation()}
                 aria-label="Drag task"
-                className="absolute top-2 right-2 p-1 text-medium-grey hover:text-main-purple cursor-grab"
+                className={`absolute top-2 right-2 p-3 md:p-1 text-medium-grey hover:text-main-purple hover:bg-slate-100 dark:hover:bg-dark-toggle rounded-full active:scale-95 cursor-grab ${gripActive ? 'ring-2 ring-main-purple/40 bg-main-purple/10' : ''}`}
             >
-                {/* simple grip icon */}
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                {/* simple grip icon - larger on mobile for easier touch, desktop keeps original size */}
+                <svg className="w-6 h-6 md:w-[14px] md:h-[14px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                     <path d="M10 6h2v2h-2zM14 6h2v2h-2zM6 6h2v2H6zM10 10h2v2h-2zM14 10h2v2h-2zM6 10h2v2H6zM10 14h2v2h-2zM14 14h2v2h-2zM6 14h2v2H6z" fill="currentColor" />
                 </svg>
             </button>

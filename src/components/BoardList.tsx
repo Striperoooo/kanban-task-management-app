@@ -26,7 +26,7 @@ export default function BoardList() {
                                     "rounded-tr-full rounded-br-full -ml-6 mr-6",
                                     isSelected
                                         ? "bg-main-purple text-white"
-                                        : "text-medium-grey hover:bg-main-purple-second-hover hover:text-main-purple",
+                                        : "text-medium-grey hover:bg-main-purple-second-hover hover:text-main-purple active:bg-main-purple/25 dark:hover:bg-white dark:hover:text-main-purple dark:active:bg-gray-300"
                                 ].join(" ")
                             }
                             onClick={() => {
@@ -53,7 +53,8 @@ export default function BoardList() {
                 })}
 
                 <button
-                    className="create-board-btn group flex w-full text-main-purple text-[15px] font-bold items-center py-3.5 gap-3 cursor-pointer rounded-tr-full rounded-br-full -ml-6 mr-6 hover:bg-main-purple-second-hover hover:text-main-purple"
+                    className="create-board-btn group flex w-full text-main-purple text-[15px] font-bold items-center py-3.5 gap-3 cursor-pointer rounded-tr-full rounded-br-full -ml-6 mr-6 hover:bg-main-purple-second-hover hover:text-main-purple
+                    active:bg-main-purple/25"
                     onClick={() => setShowBoardModal(true)}
                 >
                     <div className="pl-6 flex items-center gap-3">

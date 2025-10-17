@@ -34,7 +34,7 @@ export default function ConfirmModal({
                     <button
                         className={`md:grow font-bold text-[13px] leading-[23px] rounded-[20px] px-4 py-2 transition-colors duration-150 ease-in-out
                             ${danger
-                                ? "bg-[#EA5555] text-white hover:bg-red-hover"
+                                ? "bg-[#EA5555] text-white hover:bg-red-hover active:bg-red-hover/80"
                                 : "bg-main-purple text-white hover:bg-main-purple/90"
                             }`}
                         onClick={onConfirm}
@@ -42,7 +42,9 @@ export default function ConfirmModal({
                         Delete
                     </button>
                     <button
-                        className="md:grow  font-bold text-main-purple text-[13px] leading-[23px] bg-main-purple/10 rounded-[20px] px-4 py-2 transition-colors duration-150 ease-in-out hover:bg-main-purple/25"
+                        className="md:grow  font-bold text-main-purple text-[13px] leading-[23px] bg-main-purple/10 rounded-[20px] px-4 py-2 transition-colors duration-150 ease-in-out hover:bg-main-purple/25
+                        dark:bg-white
+                        dark:hover:bg-gray-400 dark:active:bg-gray-400/80"
                         onClick={onCancel}
                     >
                         Cancel

@@ -118,7 +118,7 @@ export default function AddBoardModal({ onClose }: { onClose: () => void }) {
 
                     <button
                         type="button"
-                        className="w-full bg-main-purple/10 dark:bg-white font-bold text-center text-main-purple text-[13px] leading-[23px] rounded-[20px] hover:bg-main-purple/25 py-2 mb-6 transition-colors"
+                        className="w-full bg-main-purple/10 font-bold text-center text-main-purple text-[13px] leading-[23px] rounded-[20px] py-2 mb-6 transition-colors hover:bg-main-purple/25 active:bg-main-purple/55 dark:bg-white  dark:hover:bg-gray-400 dark:active:bg-gray-400/80"
                         onClick={() => setColumns([...columns, ""])}
                     >
                         + Add New Column
@@ -128,7 +128,7 @@ export default function AddBoardModal({ onClose }: { onClose: () => void }) {
                     <div className="flex gap-2 justify-end">
                         <button
                             type="submit"
-                            className="w-full bg-main-purple font-bold  text-center text-white text-[13px] leading-[23px] rounded-[20px] hover:bg-main-purple-hover py-2 mb-6"
+                            className="w-full bg-main-purple font-bold  text-center text-white text-[13px] leading-[23px] rounded-[20px] hover:bg-main-purple-hover active:bg-main-purple-hover/75 py-2 mb-6"
                         >
                             Create New Board
                         </button>

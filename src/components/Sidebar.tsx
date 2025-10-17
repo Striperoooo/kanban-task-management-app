@@ -46,7 +46,12 @@ export default function Sidebar() {
                         <div className="mt-6 px-6">
                             <button
                                 onClick={() => hide()}
-                                className="hidden md:inline-flex items-center gap-3 text-medium-grey font-bold text-sm"
+                                className="hidden w-full py-3.5
+                                pl-6 -ml-6 md:inline-flex items-center gap-3 text-medium-grey font-bold text-sm
+                                hover:text-main-purple
+                                hover:bg-main-purple/10
+                                active:bg-main-purple/25
+                                hover:rounded-tr-full hover:rounded-br-full"
                             >
                                 <img src={iconHide} alt="hide sidebar" />
                                 <span>Hide Sidebar</span>
@@ -88,7 +93,8 @@ export default function Sidebar() {
             {isHidden && (
                 <button
                     onClick={() => show()}
-                    className="hidden md:flex items-center justify-center fixed w-16 pl-3 -left-5 bottom-6 z-50 bg-main-purple text-white rounded-full h-10 w-12 shadow-lg transition-all duration-300 ease-in-out hover:bg-main-purple-hover"
+                    className="hidden md:flex items-center justify-center fixed w-16 pl-3 -left-5 bottom-6 z-50 bg-main-purple text-white rounded-full h-10 w-12 shadow-lg transition-all duration-300 ease-in-out hover:bg-main-purple-hover
+                    active:bg-main-purple-hover/55"
                     aria-label="Show sidebar"
                 >
                     <img src={iconShow} alt="show sidebar" className="w-4 h-3" />

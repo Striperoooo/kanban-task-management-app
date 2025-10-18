@@ -9,4 +9,105 @@
 }
 
 
-/* Clean slate CSS - add your styles here */
+
+/* Smooth theme transitions */
+html {
+    transition: background-color 200ms ease, color 200ms ease;
+}
+
+.dark header {
+    /* Example: change header background in dark mode */
+    background-color: #0f172a;
+    /* slate-900 */
+}
+
+.dark .theme-toggle-container {
+    background-color: #1f2937;
+    /* slate-800 */
+}
+
+/* Ensure the document root fills the viewport and body background matches the app */
+html,
+body,
+#root {
+    height: 100%;
+}
+
+html,
+body,
+#root {
+    /* use viewport height to avoid percent-based collapses */
+    height: 100vh;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background-color: #F4F7FD;
+    /* light-bg */
+    transition: background-color 200ms ease, color 200ms ease;
+}
+
+.dark body {
+    background-color: #20212C;
+    /* dark-page */
+}
+
+/* Guard: keep page-level scroll locked and route overflow into the board area */
+main {
+    /* prevent document-level vertical scroll from appearing */
+
+    main {
+        /* prevent document-level vertical scroll from appearing; board handles scroll */
+        overflow-y: hidden;
+    }
+}
+
+.board-container {
+    /* positioning context for absolute inner board; don't let children
+       directly affect document layout. The inner .board-inner will
+       handle scrolling. */
+    position: relative;
+    overflow: visible;
+}
+
+/* Note: containment removed — letting children influence the inner scroll
+    area so .board-inner can measure correctly. */
+
+.board-container {
+    /* Ensure the board cannot push the document taller than the viewport
+       (subtract header height). This is a defensive guard if flex sizing
+       doesn't constrain the box in some breakpoints. */
+    max-height: calc(100vh - 64px);
+}
+
+.board-inner {
+    /* absolute-position the inner board to create a true layout boundary
+       and allow it to scroll internally without affecting the document */
+    position: absolute;
+    inset: 0;
+    overflow: auto;
+    box-sizing: border-box;
+    min-height: 0;
+    align-items: stretch;
+}
+
+.column-container {
+    /* ensure columns stretch to the board height and don't introduce extra space */
+    height: 100%;
+}
+
+/* Note: .tasks-list containment removed for the same reason. */
+
+/* Ensure every column has some breathing room at the bottom.
+   Because the board uses an absolutely-positioned scrolling container
+   and columns are set to height:100%, adding padding on some elements
+   can appear to only move content down (top) while the bottom remains
+   flush. A pseudo-element spacer after the task list guarantees visible
+   space below the last task without changing layout heights. */
+.tasks-list::after {
+    content: '';
+    display: block;
+    height: 2rem;
+    flex-shrink: 0;
+}

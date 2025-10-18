@@ -1,27 +1,33 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useBoard } from "../contexts/BoardContext"
 import iconCross from '../assets/icon-cross.svg'
 
 export default function AddBoardModal({ onClose }: { onClose: () => void }) {
-    const { boards, setSelectedBoard, addBoard } = useBoard()
+    const { boards, addBoard } = useBoard()
     const [name, setName] = useState("")
-    const [error, setError] = useState("")
+    const [nameError, setNameError] = useState("")
+    const [columnsError, setColumnsError] = useState("")
     const [columns, setColumns] = useState<string[]>([""])
 
     function handleSubmit(e: React.FormEvent) {
         e.preventDefault()
+        // clear previous errors
+        // clear previous errors
+        setNameError("")
+        setColumnsError("")
+
         if (!name.trim()) {
-            setError("Board name is required.")
+            setNameError("Board name is required.")
             return
         }
         if (boards.some(b => b.name === name.trim())) {
-            setError("Board name must be unique.")
+            setNameError("Board name must be unique.")
             return
         }
 
         const validColumns = columns.filter(col => col.trim() !== "");
         if (validColumns.length === 0) {
-            setError("Board must have at least one column.");
+            setColumnsError("Board must have at least one column.");
             return;
         }
 
@@ -29,16 +35,29 @@ export default function AddBoardModal({ onClose }: { onClose: () => void }) {
             name: name.trim(),
             columns: validColumns.map(col => ({ name: col.trim(), tasks: [] }))
         }
-        addBoard(newBoard)
+        try {
+            addBoard(newBoard)
+        } catch (err) {
+            setColumnsError('Failed to create board. See console for details.')
+            return
+        }
         onClose()
 
     }
 
 
+    useEffect(() => {
+        function onKey(e: KeyboardEvent) {
+            if (e.key === 'Escape') onClose()
+        }
+        document.addEventListener('keydown', onKey)
+        return () => document.removeEventListener('keydown', onKey)
+    }, [onClose])
+
     return (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50" onClick={onClose}>
-            <div className="bg-white rounded-md p-6 min-w-[320px] max-w-[90vw]" onClick={e => e.stopPropagation()}>
-                <h2 className="font-bold text-lg mb-4">Add New Board</h2>
+            <div role="dialog" aria-modal="true" aria-labelledby="add-board-title" className="bg-white dark:bg-dark-surface rounded-md p-6 min-w-[320px] max-w-[90vw] transition-colors" onClick={e => e.stopPropagation()}>
+                <h2 id="add-board-title" className="font-bold text-lg mb-4">Add New Board</h2>
                 <form onSubmit={handleSubmit}>
                     <label
                         htmlFor="board-name"
@@ -47,14 +66,18 @@ export default function AddBoardModal({ onClose }: { onClose: () => void }) {
                         Board Name
                     </label>
                     <input
-                        className="font-medium text-[13px] leading-[23px] py-2 px-4 border border-[#828FA3] border-opacity-25  rounded-sm p-2 w-full"
+                        className="font-medium text-[13px] leading-[23px] py-2 px-4 border border-[#828FA3] border-opacity-25 rounded-sm p-2 w-full dark:bg-dark-header dark:text-dark-text transition-colors"
                         placeholder="e.g. Web Design"
                         value={name}
-                        onChange={e => setName(e.target.value)}
+                        onChange={e => {
+                            setName(e.target.value)
+                            if (nameError) setNameError("")
+                        }}
+
                     />
 
-                    {(error === "Board name is required." || error === "Board name must be unique.") && (
-                        <p className="text-red-500 text-xs mb-2">{error}</p>
+                    {nameError && (
+                        <p className="text-red-500 text-xs mt-3 mb-2">{nameError}</p>
                     )}
 
                     <label
@@ -66,13 +89,15 @@ export default function AddBoardModal({ onClose }: { onClose: () => void }) {
                     {columns.map((col, idx) => (
                         <div key={idx} className="flex items-center gap-3 mb-3">
                             <input
-                                className="font-medium text-[13px] leading-[23px] py-2 px-4 border border-[#828FA3] border-opacity-25  rounded-sm p-2 w-full active:border-main-purple"
+                                className="font-medium text-[13px] leading-[23px] py-2 px-4 border border-[#828FA3] border-opacity-25 rounded-sm p-2 w-full active:border-main-purple dark:bg-dark-header dark:text-dark-text transition-colors"
                                 placeholder="e.g. Todo"
                                 value={col}
                                 onChange={e => {
                                     const newCols = [...columns];
                                     newCols[idx] = e.target.value;
                                     setColumns(newCols);
+                                    // clear column error when user types
+                                    if (columnsError) setColumnsError("")
                                 }}
                             />
                             <button
@@ -81,28 +106,29 @@ export default function AddBoardModal({ onClose }: { onClose: () => void }) {
                                 onClick={() => setColumns(columns.filter((_, i) => i !== idx))}
                                 aria-label="Remove column"
                             >
-                                <img src={iconCross} alt="icon cross" />
-
+                                <img src={iconCross} alt="" aria-hidden="true" />
                             </button>
                         </div>
                     ))}
 
-                    {error === "Board must have at least one column." && (
-                        <p className="text-red-500 text-xs mb-2">{error}</p>
+                    {columnsError && (
+                        <p className="text-red-500 text-xs mb-4">{columnsError}</p>
                     )}
+
 
                     <button
                         type="button"
-                        className="w-full bg-[#635FC7]/10  font-bold  text-center text-main-purple text-[13px] leading-[23px] rounded-[20px] hover:bg-[#635FC7]/25 py-2 mb-6"
+                        className="w-full bg-main-purple/10 font-bold text-center text-main-purple text-[13px] leading-[23px] rounded-[20px] py-2 mb-6 transition-colors hover:bg-main-purple/25 active:bg-main-purple/55 dark:bg-white  dark:hover:bg-gray-400 dark:active:bg-gray-400/80"
                         onClick={() => setColumns([...columns, ""])}
                     >
                         + Add New Column
                     </button>
 
+
                     <div className="flex gap-2 justify-end">
                         <button
                             type="submit"
-                            className="w-full bg-main-purple font-bold  text-center text-white text-[13px] leading-[23px] rounded-[20px] hover:bg-main-purple-hover py-2 mb-6"
+                            className="w-full bg-main-purple font-bold  text-center text-white text-[13px] leading-[23px] rounded-[20px] hover:bg-main-purple-hover active:bg-main-purple-hover/75 py-2 mb-6"
                         >
                             Create New Board
                         </button>

@@ -26,7 +26,7 @@ export default function Column({ column }: ColumnProps) {
         for (const col of (selectedBoard.columns ?? [])) {
             const found = (col.tasks ?? []).find(t => t.id === selectedTask.id);
             if (found) {
-                latest = { ...found, status: col.id };
+                latest = { ...found, status: col.id ?? col.name };
                 break;
             }
         }
@@ -41,7 +41,7 @@ export default function Column({ column }: ColumnProps) {
     const { setNodeRef } = useDroppable({ id: column.id ?? column.name })
 
     return (
-        <div ref={setNodeRef} className="column-container h-full flex flex-col">
+        <div ref={setNodeRef} className="column-container  min-h-0 flex flex-col">
             <h2 className="column-name mb-6 font-bold text-medium-grey text-xs tracking-[2.4px]">
                 <span className="column-color text-green-600 mr-1">
                     O
@@ -52,18 +52,20 @@ export default function Column({ column }: ColumnProps) {
                 </span>
             </h2>
 
-            <SortableContext
-                items={(column.tasks ?? []).map(t => t.id ?? t.title)}
-                strategy={verticalListSortingStrategy}
-            >
-                {(column.tasks ?? []).map(task => (
-                    <TaskCard
-                        key={task.id ?? task.title}
-                        task={task}
-                        onClick={() => setSelectedTask({ ...task, status: column.id })}
-                    />
-                ))}
-            </SortableContext>
+            <div className="tasks-list flex-1 min-h-0 pb-6">
+                <SortableContext
+                    items={(column.tasks ?? []).map(t => t.id ?? t.title)}
+                    strategy={verticalListSortingStrategy}
+                >
+                    {(column.tasks ?? []).map(task => (
+                        <TaskCard
+                            key={task.id ?? task.title}
+                            task={task}
+                            onClick={() => setSelectedTask({ ...task, status: column.id ?? column.name })}
+                        />
+                    ))}
+                </SortableContext>
+            </div>
 
             {selectedTask && !editModalOpen && (
                 <TaskDetailsModal
@@ -71,7 +73,7 @@ export default function Column({ column }: ColumnProps) {
                     onClose={() => setSelectedTask(null)}
                     onEdit={() => {
                         // ensure the taskToEdit has the correct original column id
-                        setTaskToEdit({ ...selectedTask, status: column.id })
+                        setTaskToEdit({ ...selectedTask, status: column.id ?? column.name })
                         setEditModalOpen(true)
                         setSelectedTask(null)
                     }}
@@ -98,7 +100,7 @@ export default function Column({ column }: ColumnProps) {
             {deleteModalOpen && taskToDelete && (
                 <ConfirmModal
                     title="Delete this task?"
-                    message={`Are you sure you want to delete the '${taskToDelete.title}' task and its subtask? This action cannot be reversed.`}
+                    message={`Are you sure you want to delete the '${taskToDelete.title}' task and its subtasks? This action cannot be reversed.`}
                     danger
                     onConfirm={() => {
                         deleteTask(column.id ?? column.name, taskToDelete.id ?? taskToDelete.title)

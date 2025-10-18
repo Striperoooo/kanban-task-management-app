@@ -42,7 +42,7 @@ export default function TaskDetailsModal({
             onClick={onClose}
         >
             <div
-                className="bg-white rounded-lg p-6 min-w-[320px] max-w-[90vw] relative"
+                className="bg-white dark:bg-dark-surface rounded-lg p-6 min-w-[320px] max-w-[480px] relative transition-colors"
                 onClick={e => e.stopPropagation()}
             >
                 <div className="flex items-center justify-between mb-2">
@@ -70,14 +70,17 @@ export default function TaskDetailsModal({
                             <li key={inputId} className="mb-2">
                                 <label
                                     htmlFor={inputId}
-                                    className="flex items-center gap-4 font-bold text-xs bg-light-bg p-3 cursor-pointer hover:bg-main-purple/25 rounded-sm"
+                                    className="flex items-center gap-4 font-bold text-xs bg-light-bg p-3 cursor-pointer hover:bg-main-purple/25
+                                    dark:bg-dark-subtask 
+                                    dark:hover:bg-main-purple/25
+                                    rounded-sm transition-colors"
                                 >
                                     <input
                                         id={inputId}
                                         type="checkbox"
                                         checked={sub.isCompleted}
                                         onChange={() => handleToggleSubtask(i)}
-                                        className="shrink-0"
+                                        className="shrink-0 cursor-pointer"
                                     />
                                     <span className={sub.isCompleted ? "line-through text-medium-grey" : ""}>
                                         {sub.title}
@@ -90,7 +93,7 @@ export default function TaskDetailsModal({
 
                 <label className="inline-block font-bold text-xs text-medium-grey mb-2">Current Status</label>
                 <select
-                    className="font-medium bg-white text-[13px] leading-[23px] py-2 px-4 border border-[#828FA3] border-opacity-25 rounded-sm p-2 w-full"
+                    className="font-medium bg-white dark:bg-dark-header text-[13px] leading-[23px] py-2 px-4 border border-[#828FA3] border-opacity-25 rounded-sm p-2 w-full transition-colors cursor-pointer"
                     value={status}
                     onChange={handleStatusChange}
                 >

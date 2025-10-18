@@ -73,14 +73,18 @@ export function BoardProvider({ children }: { children: ReactNode }) {
     const selectedBoard = boards.find(b => b.id === selectedBoardId) ?? boards[0]
 
     function addBoard(newBoard: Board) {
-        const boardWithId = { id: newBoard.id ?? `board-${Date.now()}`, ...newBoard }
-        setBoards(prev => {
-            const next = [...prev, boardWithId]
-            // persist change
-            try { saveData({ boards: next, selectedBoardId: boardWithId.id }) } catch { }
-            return next
-        })
-        setSelectedBoard(boardWithId)
+        // Generate a unique id for the new board to avoid colliding with seeded ids
+        const uniqueBoardId = `board-${Date.now()}`
+        // Ensure ids for the new board and its descendants, using the unique id
+        const normalized = ensureIds([{ ...newBoard, id: uniqueBoardId }])[0]
+        const boardWithId = { ...normalized, id: uniqueBoardId }
+        // Append and set selected board id directly
+        const next = [...boards, boardWithId]
+        setBoards(next)
+        setSelectedBoardId(boardWithId.id)
+        try { saveData({ boards: next, selectedBoardId: boardWithId.id }) } catch { }
+        // debug
+        console.log('[BoardContext] addBoard:', boardWithId, 'boards now:', next.length)
     }
 
     function updateBoard(updatedBoard: Board) {

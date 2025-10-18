@@ -74,7 +74,7 @@ export default function BoardView() {
         // Avoid redundant moves: if the active task is already at the target position, do nothing.
         // This prevents repeated state updates during dragOver which can cause measurement loops
         // in @dnd-kit and lead to "Maximum update depth exceeded".
-    const fromCol = (selectedBoard.columns ?? []).find(c => c.id === fromColumnId || c.name === fromColumnId)
+        const fromCol = (selectedBoard.columns ?? []).find(c => c.id === fromColumnId || c.name === fromColumnId)
         const fromIndex = fromCol ? (fromCol.tasks ?? []).findIndex(t => (t.id ?? t.title) === activeId) : -1
 
         // If moving within same column and index didn't change, skip the move

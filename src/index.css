@@ -9,7 +9,6 @@
 }
 
 
-/* Clean slate CSS - add your styles here */
 
 /* Smooth theme transitions */
 html {
@@ -110,6 +109,5 @@ main {
     content: '';
     display: block;
     height: 2rem;
-    /* adjust to taste: 3rem ~= 48px */
     flex-shrink: 0;
 }

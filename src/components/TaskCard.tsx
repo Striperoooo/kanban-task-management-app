@@ -3,16 +3,32 @@ import type { TaskProps } from "../types";
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 
-export default function TaskCard({ task, onClick }: TaskProps) {
+export default function TaskCard({ task, onClick, preview }: TaskProps & { preview?: boolean }) {
     const completed = (task.subtasks ?? []).filter(st => st.isCompleted).length
     const total = (task.subtasks ?? []).length
 
     // use task.id as the draggable id; fall back to title for older data
     const draggableId = task.id ?? task.title
-    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: draggableId })
+    // If this card is rendered inside a DragOverlay preview, skip sortable wiring
+    // to avoid double-registration and nested drag handlers.
+    let attributes: any = {}
+    let listeners: any = {}
+    let setNodeRef: any = undefined
+    let transform: any = null
+    let transition: any = undefined
+    let isDragging = false
+    if (!preview) {
+        const sortable = useSortable({ id: draggableId })
+        attributes = (sortable as any).attributes
+        listeners = (sortable as any).listeners
+        setNodeRef = (sortable as any).setNodeRef
+        transform = (sortable as any).transform
+        transition = (sortable as any).transition
+        isDragging = (sortable as any).isDragging ?? false
+    }
 
     const style = {
-        transform: CSS.Transform.toString(transform),
+        transform: transform ? CSS.Transform.toString(transform) : undefined,
         transition
     }
 
@@ -69,7 +85,7 @@ export default function TaskCard({ task, onClick }: TaskProps) {
             role="button"
             tabIndex={0}
             onKeyDown={handleKeyDown}
-            className="taskcard-container relative bg-white dark:bg-dark-header rounded-lg px-4 pr-12 md:pr-4 py-6 mb-5 w-[280px] shadow-light-drop-shadow cursor-pointer hover:text-main-purple transition-colors focus:outline-none focus:ring-2 focus:ring-main-purple"
+            className={`taskcard-container relative bg-white dark:bg-dark-header rounded-lg px-4 pr-12 md:pr-4 py-6 mb-5 w-[280px] shadow-light-drop-shadow cursor-pointer hover:text-main-purple transition-colors focus:outline-none focus:ring-2 focus:ring-main-purple ${isDragging ? 'opacity-0 pointer-events-none' : ''}`}
             onClick={onClick}
         >
             {/* Drag handle: listeners/attributes live here so clicking the card body doesn't start a drag */}

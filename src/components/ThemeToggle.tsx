@@ -1,4 +1,3 @@
-// no default React import required with the JSX transform
 import { useTheme } from '../contexts/ThemeContext'
 
 export default function ThemeToggle() {

@@ -3,10 +3,15 @@ import type { DragEndEvent, DragOverEvent } from '@dnd-kit/core'
 import { useBoard } from '../contexts/BoardContext';
 import Column from './Column';
 import ErrorBoundary from './ErrorBoundary'
+import { useRef, useEffect } from 'react'
 
 // Minimal DnD scaffold: handle drag end and call moveTask to reorder within a column
 export default function BoardView() {
     const { selectedBoard, moveTask } = useBoard()
+
+    // refs for debouncing and preventing immediate reverse moves
+    const dragOverTimeout = useRef<number | null>(null)
+    const lastOptimistic = useRef<{ from: string, to: string, index: number, time: number } | null>(null)
 
     function handleDragEnd(e: DragEndEvent) {
         try {
@@ -34,6 +39,8 @@ export default function BoardView() {
             }
 
             if (!fromColumnId || !toColumnId) return
+
+
 
             // final move (persist)
             moveTask(fromColumnId, toColumnId, activeId, toIndex, true)
@@ -80,9 +87,30 @@ export default function BoardView() {
         // If moving within same column and index didn't change, skip the move
         if (fromColumnId === toColumnId && fromIndex === toIndex) return
 
-        // Otherwise perform optimistic local move (no persist)
-        moveTask(fromColumnId, toColumnId, activeId, toIndex, false)
+        // Avoid rapid flip-flop between two columns: if the last optimistic move
+        // was the inverse of this one and happened recently, skip it.
+        const now = Date.now()
+        const last = lastOptimistic.current
+        if (last && last.from === toColumnId && last.to === fromColumnId && (now - last.time) < 250) {
+            return
+        }
+
+        // Debounce optimistic moves to avoid flooding state updates during fast pointer movements
+        try { if (dragOverTimeout.current) window.clearTimeout(dragOverTimeout.current) } catch { }
+        dragOverTimeout.current = window.setTimeout(() => {
+            moveTask(fromColumnId, toColumnId, activeId, toIndex, false)
+            lastOptimistic.current = { from: fromColumnId, to: toColumnId, index: toIndex, time: Date.now() }
+            dragOverTimeout.current = null
+        }, 120) as unknown as number
+
     }
+
+    // cleanup pending timeout on unmount
+    useEffect(() => {
+        return () => {
+            try { if (dragOverTimeout.current) window.clearTimeout(dragOverTimeout.current) } catch { }
+        }
+    }, [])
 
     return (
         <ErrorBoundary>

@@ -211,19 +211,27 @@ export function BoardProvider({ children }: { children: ReactNode }) {
 
     function moveTask(fromColumnId: string, toColumnId: string, taskId: string, toIndex: number, persist: boolean = true) {
         setBoards(prev => {
+
             const copy = prev.map(b => ({ ...b, columns: b.columns ? b.columns.map(c => ({ ...c, tasks: c.tasks ? [...c.tasks] : [] })) : [] }))
             const board = copy.find(b => b.id === selectedBoardId)!
             const fromColumn = board.columns!.find(c => c.id === fromColumnId)!
             const toColumn = board.columns!.find(c => c.id === toColumnId)!
             const fromIndex = fromColumn.tasks!.findIndex(t => t.id === taskId)
             if (fromIndex === -1) return prev
-            const [moved] = fromColumn.tasks!.splice(fromIndex, 1)
 
-            // if moving within same column, adjust insertion index based on removal index
+            // If moving within same column, compute adjusted insertion index to account for
+            // the initial removal shifting indexes. If the adjusted insert index equals
+            // the original index, this is effectively a no-op and we should skip updating
+            // state to avoid unnecessary re-renders which can cause DnD measurement loops.
             if (fromColumnId === toColumnId) {
-                const insertIndex = toIndex
+                const insertIndex = toIndex > fromIndex ? toIndex - 1 : toIndex
+                if (insertIndex === fromIndex) {
+                    return prev
+                }
+                const [moved] = fromColumn.tasks!.splice(fromIndex, 1)
                 fromColumn.tasks!.splice(insertIndex, 0, moved)
             } else {
+                const [moved] = fromColumn.tasks!.splice(fromIndex, 1)
                 toColumn.tasks!.splice(toIndex, 0, moved)
             }
 

@@ -3,7 +3,7 @@
 [![React](https://img.shields.io/badge/React-61DAFB?style=flat&logo=react&logoColor=white)](https://reactjs.org) [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org) [![Tailwind](https://img.shields.io/badge/Tailwind-06B6D4?style=flat&logo=tailwindcss&logoColor=white)](https://tailwindcss.com) [![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white)](https://vitejs.dev) [![Vitest](https://img.shields.io/badge/Vitest-8B5CF6?style=flat&logo=vitest&logoColor=white)](https://vitest.dev) [![React Testing Library](https://img.shields.io/badge/RTL-@testing--library%2Freact-ffdd57?style=flat&logo=testinglibrary&logoColor=black)](https://testing-library.com/docs/react-testing-library/intro/) [![DndKit](https://img.shields.io/badge/DndKit-7C3AED?style=flat&logo=web&logoColor=white)](https://github.com/clauderic/dnd-kit)
 
 
-A responsive and accessible Kanban-style task manager built with React + TypeScript. Demonstrates task and board CRUD, component-driven UI, predictable state, keyboard-accessible drag-and-drop, and fast provider-level tests.
+A responsive and accessible Kanban-style task manager built with React + TypeScript. Demonstrates task, subtask and board CRUD, component-driven UI, predictable state, keyboard-accessible drag-and-drop, and fast provider-level tests.
 
 Highlights
 -----------------

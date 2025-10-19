@@ -1,73 +1,77 @@
-# React + TypeScript + Vite
+# Kanban Task Management App 
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+[![React](https://img.shields.io/badge/React-61DAFB?style=flat&logo=react&logoColor=white)](https://reactjs.org) [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org) [![Tailwind](https://img.shields.io/badge/Tailwind-06B6D4?style=flat&logo=tailwindcss&logoColor=white)](https://tailwindcss.com) [![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white)](https://vitejs.dev) [![Vitest](https://img.shields.io/badge/Vitest-8B5CF6?style=flat&logo=vitest&logoColor=white)](https://vitest.dev) [![DndKit](https://img.shields.io/badge/DndKit-7C3AED?style=flat&logo=web&logoColor=white)](https://github.com/clauderic/dnd-kit)
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+A responsive and accessible Kanban-style task manager built with React + TypeScript. Demonstrates task and board CRUD, component-driven UI, predictable state, keyboard-accessible drag-and-drop, and fast provider-level tests.
 
-## React Compiler
+Highlights
+-----------------
+- State management: React Context with clear mutators and normalized IDs.
+- Testing: fast and deterministic provider-level tests (Vitest).
+- Accessibility & DnD (Drag-and-Drop): keyboard-accessible interactions powered by `@dnd-kit`.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Live demo
+-----------------
+- Live demo: https://kanban-striperooo.netlify.app/ 
+- Demo GIF / video: [PLACEHOLDER]
 
-## Expanding the ESLint configuration
+Tech
+----
+- React 19 + TypeScript — component UI & typed code (https://reactjs.org, https://www.typescriptlang.org)
+- Vite — dev server & build (https://vitejs.dev)
+- Tailwind CSS — utility-first styling (https://tailwindcss.com)
+- Vitest — unit tests (https://vitest.dev)
+- @dnd-kit/core + @dnd-kit/sortable — drag & drop (https://github.com/clauderic/dnd-kit)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Features
+--------
+- Multiple boards with columns and tasks
+- Create / edit / delete boards and tasks
+- Drag and drop tasks within and across columns (keyboard accessible)
+- Subtasks with completion toggles
+- Local persistence (storage helper; mocked in tests)
+- Provider-level unit tests for core logic (`BoardContext`)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Selected fixes & impact
+---------------------------------
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+1) Fixing unreliable task moves
+- Problem: Drag-and-drop sometimes triggered render-loop errors during rapid drags.
+- Solution: Skip no-op moves in drag handlers, use shallow-copy updates, and add an ErrorBoundary for the DnD area.
+- Result: Stable drag interactions; no more maximum-update-depth errors during rapid dragging.
+- Next: Add DragOverlay for a polished drag preview and an end-to-end drag test.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+2) Making tests fast and deterministic
+- Problem: Tests flaked due to reliance on real localStorage and a test helper that didn't observe provider updates.
+- Solution: Mock `src/lib/storage`, fix the `Grabber` helper to observe context changes, and focus tests at the provider level.
+- Result: Fast, deterministic unit tests that validate core business logic without brittle UI dependencies.
+- Next: Optionally add CI or a small UI smoke test for board creation.
+
+Quick start (local)
+-------------------
+1. Install dependencies
+
+```powershell
+npm ci
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2. Run dev server
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```powershell
+npm run dev
 ```
+
+3. Run tests
+
+```powershell
+npm run test -- --run
+```
+
+Contributing
+------------
+This is a personal project. Feel free to open issues or PRs with suggestions.
+
+License
+-------
+MIT

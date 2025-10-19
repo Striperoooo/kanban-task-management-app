@@ -22,7 +22,7 @@ function Grabber({ onReady }: { onReady: (ctx: any) => void }) {
     return null
 }
 
-describe('Extra BoardContext tests (high-value)', () => {
+describe('Extra BoardContext tests', () => {
     beforeEach(() => {
         vi.clearAllMocks()
     })

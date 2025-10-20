@@ -71,7 +71,3 @@ npm run test -- --run
 Contributing
 ------------
 This is a personal project. Feel free to open issues or PRs with suggestions.
-
-License
--------
-MIT

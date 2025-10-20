@@ -2,7 +2,20 @@ import { useState, useRef, useEffect } from "react";
 import { useBoard } from "../contexts/BoardContext";
 import type { Board } from "../types";
 import iconCross from '../assets/icon-cross.svg';
-export default function EditBoardModal({ board, onClose, autoAddEmptyColumn, autoFocusIndex }: { board: Board, onClose: () => void, autoAddEmptyColumn?: boolean, autoFocusIndex?: number }) {
+
+
+export default function EditBoardModal({
+    board,
+    onClose,
+    autoAddEmptyColumn,
+    autoFocusIndex
+}: {
+    board: Board,
+    onClose: () => void,
+    autoAddEmptyColumn?: boolean,
+    autoFocusIndex?: number
+}) {
+
     const { setSelectedBoard, updateBoard } = useBoard();
     const [name, setName] = useState(board.name);
     const [error, setError] = useState("");

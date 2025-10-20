@@ -18,17 +18,17 @@ module.exports = {
                 'medium-grey': '#828FA3',
                 'light-lines': '#E4EBFA',
                 'red-hover': '#FF9898',
-                // per-theme dark tokens
+                'linear': '#E9EFFA',
                 // dark theme colors
                 'dark-lines': '#3E3F4E',
                 'dark-header': '#2B2C37',
                 'dark-page': '#20212C',
                 'dark-surface': '#2B2C37',
-                // a very dark shade used for subtask backgrounds in dark mode
                 'dark-subtask': '#20212C',
                 'dark-text': '#FFFFFF',
                 'dark-sidebar': '#2B2C37',
-                'dark-toggle': '#20212C'
+                'dark-toggle': '#20212C',
+                'dark-linear': '#2B2C37'
             },
             boxShadow: {
                 'light-drop-shadow': '0px 4px 6px 0px rgba(54, 78, 126, 0.1015)',

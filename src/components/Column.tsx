@@ -41,7 +41,7 @@ export default function Column({ column }: ColumnProps) {
     const { setNodeRef } = useDroppable({ id: column.id ?? column.name })
 
     return (
-        <div ref={setNodeRef} className="column-container  min-h-0 flex flex-col">
+        <div ref={setNodeRef} className="column-container min-h-0 flex flex-col ">
             <h2 className="column-name mb-6 font-bold text-medium-grey text-xs tracking-[2.4px]">
                 <span className="column-color text-green-600 mr-1">
                     O
@@ -52,7 +52,7 @@ export default function Column({ column }: ColumnProps) {
                 </span>
             </h2>
 
-            <div className="tasks-list flex-1 min-h-0 pb-6">
+            <div className="tasks-list min-w-[180px] flex-1 min-h-0 pb-6">
                 <SortableContext
                     items={(column.tasks ?? []).map(t => t.id ?? t.title)}
                     strategy={verticalListSortingStrategy}

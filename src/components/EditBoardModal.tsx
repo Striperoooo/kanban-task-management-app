@@ -1,14 +1,43 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useBoard } from "../contexts/BoardContext";
 import type { Board } from "../types";
 import iconCross from '../assets/icon-cross.svg';
 
-export default function EditBoardModal({ board, onClose }: { board: Board, onClose: () => void }) {
+
+export default function EditBoardModal({
+    board,
+    onClose,
+    autoAddEmptyColumn,
+    autoFocusIndex
+}: {
+    board: Board,
+    onClose: () => void,
+    autoAddEmptyColumn?: boolean,
+    autoFocusIndex?: number
+}) {
+
     const { setSelectedBoard, updateBoard } = useBoard();
     const [name, setName] = useState(board.name);
     const [error, setError] = useState("");
     const origCols = board.columns ?? [];
-    const [columns, setColumns] = useState(origCols.map(col => col.name));
+    // initialize columns, optionally appending an empty column when requested
+    const [columns, setColumns] = useState<string[]>(() => {
+        const base = origCols.map(col => col.name);
+        return autoAddEmptyColumn ? [...base, ""] : base;
+    });
+
+    // refs to column inputs so we can focus the newly added input when requested
+    const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
+
+    useEffect(() => {
+        if (autoAddEmptyColumn && typeof autoFocusIndex === 'number') {
+            // focus on next tick to ensure input is mounted
+            setTimeout(() => {
+                const ref = inputRefs.current[autoFocusIndex];
+                try { ref?.focus(); } catch { }
+            }, 0);
+        }
+    }, [autoAddEmptyColumn, autoFocusIndex]);
 
     function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -59,6 +88,7 @@ export default function EditBoardModal({ board, onClose }: { board: Board, onClo
                     {columns.map((col, idx) => (
                         <div key={idx} className="flex items-center gap-3 mb-3">
                             <input
+                                ref={el => { inputRefs.current[idx] = el }}
                                 className="font-medium text-[13px] leading-[23px] py-2 px-4 border border-[#828FA3] border-opacity-25 rounded-sm p-2 w-full active:border-main-purple dark:bg-dark-header dark:text-dark-text transition-colors"
                                 placeholder="e.g. Todo"
                                 value={col}

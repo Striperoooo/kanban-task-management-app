@@ -141,7 +141,7 @@ export default function BoardView() {
                             <Column key={column.id ?? column.name} column={column} />
                         ))}
 
-                        <div className='w-[180px] h-screen mt-10 bg-[#E9EFFA] flex-shrink-0 flex items-center justify-center rounded-lg border-2 border-dashed border-transparent dark:border-transparent dark:bg-dark-linear/50'>
+                        <div className='w-[280px] h-screen mt-10 bg-[#E9EFFA] flex-shrink-0 flex items-center justify-center rounded-lg border-2 border-dashed border-transparent dark:border-transparent dark:bg-dark-linear/50'>
                             <button
                                 className='px-4 py-3 rounded-md text-medium-grey bg-white/0 hover:text-main-purple hover:bg-main-purple-second-hover 
                                 dark:hover:bg-dark-header transition-colors  font-bold'

@@ -4,6 +4,7 @@ import { useBoard } from '../contexts/BoardContext';
 import Column from './Column';
 import TaskCard from './TaskCard'
 import ErrorBoundary from './ErrorBoundary'
+import EditBoardModal from './EditBoardModal'
 import { useRef, useEffect, useState } from 'react'
 
 // Minimal DnD scaffold: handle drag end and call moveTask to reorder within a column
@@ -14,6 +15,7 @@ export default function BoardView() {
     const dragOverTimeout = useRef<number | null>(null)
     const lastOptimistic = useRef<{ from: string, to: string, index: number, time: number } | null>(null)
     const [activeId, setActiveId] = useState<string | null>(null)
+    const [editModalOpen, setEditModalOpen] = useState(false)
 
     function handleDragEnd(e: DragEndEvent) {
         try {
@@ -82,10 +84,10 @@ export default function BoardView() {
             }
         }
 
-    if (!fromColumnId || !toColumnId) return
+        if (!fromColumnId || !toColumnId) return
 
-    // track active id for DragOverlay preview
-    setActiveId(activeId)
+        // track active id for DragOverlay preview
+        setActiveId(activeId)
 
         // Avoid redundant moves: if the active task is already at the target position, do nothing.
         // This prevents repeated state updates during dragOver which can cause measurement loops
@@ -138,8 +140,27 @@ export default function BoardView() {
                         {(selectedBoard.columns ?? []).map((column) => (
                             <Column key={column.id ?? column.name} column={column} />
                         ))}
+
+                        <div className='w-[180px] h-screen mt-10 bg-[#E9EFFA] flex-shrink-0 flex items-center justify-center rounded-lg border-2 border-dashed border-transparent dark:border-transparent dark:bg-dark-linear/50'>
+                            <button
+                                className='px-4 py-3 rounded-md text-medium-grey bg-white/0 hover:text-main-purple hover:bg-main-purple-second-hover 
+                                dark:hover:bg-dark-header transition-colors  font-bold'
+                                onClick={() => setEditModalOpen(true)}
+                            >
+                                + New Column
+                            </button>
+                        </div>
                     </div>
                 </div>
+
+                {editModalOpen && (
+                    <EditBoardModal
+                        board={selectedBoard}
+                        onClose={() => setEditModalOpen(false)}
+                        autoAddEmptyColumn
+                        autoFocusIndex={(selectedBoard.columns ?? []).length}
+                    />
+                )}
 
                 <DragOverlay dropAnimation={{ duration: 120 }}>
                     {activeId ? (() => {

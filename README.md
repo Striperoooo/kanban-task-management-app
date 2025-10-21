@@ -11,18 +11,12 @@ Highlights
 - Testing: fast and deterministic provider-level tests (Vitest).
 - Accessibility & DnD (Drag-and-Drop): keyboard-accessible interactions powered by `@dnd-kit`.
 
-Live demo
+Live demo: https://kanban-striperooo.netlify.app/
 -----------------
-- Live demo: https://kanban-striperooo.netlify.app/ 
-- Demo GIF / video: [PLACEHOLDER]
 
-Tech
-----
-- React 19 + TypeScript — component UI & typed code (https://reactjs.org, https://www.typescriptlang.org)
-- Vite — dev server & build (https://vitejs.dev)
-- Tailwind CSS — utility-first styling (https://tailwindcss.com)
-- Vitest + React Testing Library + jest-dom — unit tests (https://vitest.dev)
-- @dnd-kit/core + @dnd-kit/sortable — drag & drop (https://github.com/clauderic/dnd-kit)
+  
+![15fps kanban-demo-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/3f7acc96-baa3-43e8-a7f8-f39ec4f7ece5)
+
 
 Features
 --------

@@ -11,7 +11,7 @@ Highlights
 - Testing: fast and deterministic provider-level tests (Vitest).
 - Accessibility & DnD (Drag-and-Drop): keyboard-accessible interactions powered by `@dnd-kit`.
 
-Live demo: https://kanban-striperooo.netlify.app/
+Live demo: https://kanban-charles.netlify.app/
 -----------------
 
   

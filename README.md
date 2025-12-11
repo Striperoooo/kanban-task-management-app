@@ -34,13 +34,11 @@ Selected fixes & impact
 - Problem: Drag-and-drop sometimes triggered render-loop errors during rapid drags.
 - Solution: Skip no-op moves in drag handlers, use shallow-copy updates, and add an ErrorBoundary for the DnD area.
 - Result: Stable drag interactions; no more maximum-update-depth errors during rapid dragging.
-- Next: Add DragOverlay for a polished drag preview and an end-to-end drag test.
 
 2) Making tests fast and deterministic
 - Problem: Tests flaked due to reliance on real localStorage and a test helper that didn't observe provider updates.
 - Solution: Mock `src/lib/storage`, fix the `Grabber` helper to observe context changes, and focus tests at the provider level.
 - Result: Fast, deterministic unit tests that validate core business logic without brittle UI dependencies.
-- Next: Optionally add CI or a small UI smoke test for board creation.
 
 Quick start (local)
 -------------------
